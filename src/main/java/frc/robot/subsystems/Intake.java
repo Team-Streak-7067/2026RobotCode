@@ -95,10 +95,6 @@ public class Intake extends SubsystemBase {
 		intakeMotor.set(IntakeConstants.intakeSpeed);
 	}
 
-	public void push() {
-		intakeMotor.set(-IntakeConstants.intakeSpeed);
-	}
-
 	public void stopIntake() {
 		intakeMotor.stopMotor();
 	}
