@@ -1,11 +1,13 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class Constants {
 	public static class IntakeConstants {
@@ -36,5 +38,20 @@ public final class Constants {
 
         public static final double conveyorSpeed = .3;
         public static final double alignSpeed = .3;
+    }
+
+    public static class ShooterConstants {
+        public static final int leaderCANID = 0;
+        public static final int followerCANID = 0;
+
+        public static final double ratio = 18/24;
+
+        public static final AngularVelocity idleVelocity = RotationsPerSecond.of(0);
+
+        public static final Slot0Configs S0C = new Slot0Configs()
+        .withKP(0).withKI(0).withKD(0).withKA(0).withKV(0);
+
+        public static final double[][] speedMapData = {
+        };
     }
 }

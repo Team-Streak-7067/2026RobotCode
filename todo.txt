@@ -1,3 +1,7 @@
+### ALL ###
+put in can ids
+gear ratios for everything
+
 ## INTAKE
 angle motor soft limits
 check motor directions
@@ -7,3 +11,6 @@ find openpos and resetpos for angle motor
 ## CONVEYOR
 check motor directions
 check speeds
+
+## SHOOTER
+tune pid
