@@ -1,8 +1,8 @@
 ## INTAKE
-[ ] find angle motor soft limits
-[ ] check intake&angle motor directions
-[ ] tune angle motor pid
-[ ] find openpos and resetpos for intake angle
+angle motor soft limits
+check motor directions
+tune angle motor pid
+find openpos and resetpos for angle motor
 
 ## CONVEYOR
 check motor directions
