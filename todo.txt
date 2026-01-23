@@ -1,0 +1,5 @@
+## INTAKE
+[ ] find angle motor soft limits
+[ ] check intake&angle motor direction
+[ ] tune angle motor pid
+[ ] find openpos and resetpos for intake angle
