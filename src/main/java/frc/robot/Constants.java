@@ -7,8 +7,8 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 
 import edu.wpi.first.units.measure.Angle;
 
-public class Constants {
-	public class IntakeConstants {
+public final class Constants {
+	public static class IntakeConstants {
 		public static final int angleMotorCANID = 0;
 		public static final int intakeMotorCANID = 0;
 
@@ -29,4 +29,12 @@ public class Constants {
 		public static final Angle resetPos = Rotations.of(0);
 		public static final Angle openPos = Rotations.of(0);
 	}
+
+    public static class ConveyorConstants {
+        public static final int conveyorMotorCANID = 0;
+        public static final int alignMotorCANID = 0;
+
+        public static final double conveyorSpeed = .3;
+        public static final double alignSpeed = .3;
+    }
 }
