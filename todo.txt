@@ -14,3 +14,5 @@ check speeds
 
 ## SHOOTER
 tune pid
+tune idle speed
+fill speed map with values

@@ -4,21 +4,21 @@
 
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Shooter.ShooterState;
 
-public class UpdateSetpoint extends InstantCommand {
+public class Idle extends InstantCommand {
 	Shooter shooter = Shooter.getInstance();
-	AngularVelocity setpoint;
 	
-	public UpdateSetpoint(AngularVelocity setpoint) {
+	public Idle() {
 		addRequirements(shooter);
-		this.setpoint = setpoint;
 	}
-
+	
 	@Override
 	public void initialize() {
-		shooter.updateSetpoint(setpoint);
+		shooter.updateSetpoint(ShooterConstants.idleSpeed);
+		shooter.setState(ShooterState.Idle);
 	}
 }

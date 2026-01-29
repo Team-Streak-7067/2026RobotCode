@@ -22,7 +22,7 @@ public class Conveyor extends SubsystemBase {
 		return instance;
 	}
 	
-	public Conveyor() {
+	Conveyor() {
 		configMotors();
 	}
 	

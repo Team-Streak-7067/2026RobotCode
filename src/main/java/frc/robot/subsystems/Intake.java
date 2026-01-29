@@ -28,7 +28,7 @@ public class Intake extends SubsystemBase {
 
 	PositionVoltage AngleCtrl = new PositionVoltage(0);
 	
-	public Intake() {
+	Intake() {
 		configMotors();
 		resetPos();
 	}

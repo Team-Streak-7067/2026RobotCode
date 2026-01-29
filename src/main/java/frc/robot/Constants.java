@@ -46,7 +46,7 @@ public final class Constants {
 
         public static final double ratio = 18/24;
 
-        public static final AngularVelocity idleVelocity = RotationsPerSecond.of(0);
+        public static final AngularVelocity idleSpeed = RotationsPerSecond.of(0);
 
         public static final Slot0Configs S0C = new Slot0Configs()
         .withKP(0).withKI(0).withKD(0).withKA(0).withKV(0);

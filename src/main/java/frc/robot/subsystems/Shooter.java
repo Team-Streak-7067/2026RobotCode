@@ -29,12 +29,14 @@ public class Shooter extends SubsystemBase {
 
 	VelocityVoltage ctrl = new VelocityVoltage(0);
 	InterpolatingDoubleTreeMap speedMap = new InterpolatingDoubleTreeMap(); // dist (m) => speed (rps)
+
+	ShooterState state = ShooterState.Off;
 	
 	public static Shooter getInstance() {
 		return instance;
 	}
 	
-	public Shooter() {
+	Shooter() {
 		configMotors();
 		populateMap();
 	}
@@ -73,13 +75,28 @@ public class Shooter extends SubsystemBase {
 
 	public void stop() {
 		leader.stopMotor();
+		state = ShooterState.Off;
 	}
 
 	AngularVelocity calcSpeed(Distance dist) {
 		return RotationsPerSecond.of(speedMap.get(dist.in(Meters)));
 	}
 
-	public void prep(Distance distance) {
+	public void spinUp(Distance distance) {
 		updateSetpoint(calcSpeed(distance));
+	}
+
+	public ShooterState getState() {
+		return state;
+	}
+
+	public void setState(ShooterState state) {
+		this.state = state;
+	}
+
+	public enum ShooterState {
+		Off,
+		Idle,
+		Shooting
 	}
 }
