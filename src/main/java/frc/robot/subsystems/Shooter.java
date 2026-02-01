@@ -98,4 +98,11 @@ public class Shooter extends SubsystemBase {
 		Idle,
 		Shooting
 	}
+
+	public void stopAll() {
+		try {
+			getCurrentCommand().cancel();
+		} catch (Exception e) {}
+		stop();
+	}
 }

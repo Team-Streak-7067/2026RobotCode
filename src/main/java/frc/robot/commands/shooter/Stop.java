@@ -17,7 +17,7 @@ public class Stop extends InstantCommand {
 	
 	@Override
 	public void initialize() {
-		shooter.stop();
+		shooter.stopAll();
 		shooter.setState(ShooterState.Off);
 	}
 }
