@@ -75,7 +75,6 @@ public class Shooter extends SubsystemBase {
 
 	public void stop() {
 		leader.stopMotor();
-		state = ShooterState.Off;
 	}
 
 	AngularVelocity calcSpeed(Distance dist) {

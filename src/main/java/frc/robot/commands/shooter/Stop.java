@@ -6,6 +6,7 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Shooter.ShooterState;
 
 public class Stop extends InstantCommand {
 	Shooter shooter = Shooter.getInstance();
@@ -17,5 +18,6 @@ public class Stop extends InstantCommand {
 	@Override
 	public void initialize() {
 		shooter.stop();
+		shooter.setState(ShooterState.Off);
 	}
 }
