@@ -78,8 +78,6 @@ public class Intake extends SubsystemBase {
 
 		angleMotor.getConfigurator().apply(angleConfig);
         
-		angleMotor.setControl(AngleCtrl);
-
 		AngleCtrl.Slot = 0;
 	}
 
@@ -113,8 +111,7 @@ public class Intake extends SubsystemBase {
 
 	public void updateSetpoint(Angle setpoint) {
 		// might need to be changed to this (and remove setcontrol from motorConfig)
-		// angleMotor.setControl(AngleCtrl.withPosition(setpoint));
-		AngleCtrl.Position = setpoint.in(Rotations);
+		angleMotor.setControl(AngleCtrl.withPosition(setpoint));
 	}
 
 	public void stopAll() {

@@ -70,7 +70,7 @@ public class Shooter extends SubsystemBase {
 	}
 
 	public void updateSetpoint(AngularVelocity setpoint) {
-		ctrl.Velocity = setpoint.in(RotationsPerSecond);
+		leader.setControl(ctrl.withVelocity(setpoint));
 	}
 
 	public void stop() {
