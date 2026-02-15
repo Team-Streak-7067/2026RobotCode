@@ -16,3 +16,6 @@ check speeds
 tune pid
 tune idle speed
 fill speed map with values
+
+#SWERVE
+sysid charachterize gains
