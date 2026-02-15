@@ -50,7 +50,7 @@ public class Shooter extends SubsystemBase {
 		
 		TalonFXConfiguration cfg = new TalonFXConfiguration();
 		cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-		cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 		cfg.Slot0 = ShooterConstants.S0C;
 		cfg.Feedback.SensorToMechanismRatio = 1/ShooterConstants.ratio;
 		leader.getConfigurator().apply(cfg);
@@ -58,7 +58,7 @@ public class Shooter extends SubsystemBase {
 
 		ctrl.Slot = 0;
 
-		follower.setControl(new Follower(leader.getDeviceID(), MotorAlignmentValue.Opposed));
+		follower.setControl(new Follower(ShooterConstants.leaderCANID, MotorAlignmentValue.Opposed));
 	}
 
 	void populateMap() {

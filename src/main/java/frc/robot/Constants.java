@@ -35,25 +35,30 @@ public final class Constants {
 	}
 
     public static class ConveyorConstants {
-        public static final int conveyorMotorCANID = 0;
-        public static final int alignMotorCANID = 0;
+        public static final int conveyorMotorCANID = 3;
+        public static final int alignMotorCANID = 4;
 
         public static final double conveyorSpeed = .3;
         public static final double alignSpeed = .3;
     }
 
     public static class ShooterConstants {
-        public static final int leaderCANID = 0;
-        public static final int followerCANID = 0;
+        public static final int leaderCANID = 5;
+        public static final int followerCANID = 6;
 
         public static final double ratio = 18/24;
 
         public static final AngularVelocity idleSpeed = RotationsPerSecond.of(0);
 
         public static final Slot0Configs S0C = new Slot0Configs()
-        .withKP(0).withKI(0).withKD(0).withKA(0).withKV(0);
+        .withKP(.25).withKI(0).withKD(0).withKA(0).withKV(0);
 
         public static final double[][] speedMapData = {
         };
+    }
+
+    public static class LedConstants {
+        public static final int port = 0;
+        public static final int count = 9;
     }
 }

@@ -37,6 +37,9 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public static final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
+    public final Intake intake = Intake.getInstance();
+    public static final Conveyor conveyor = Conveyor.getInstance();
+    public static final Shooter shooter = Shooter.getInstance();
 
 	public RobotContainer() {
 		configureBindings();
@@ -70,6 +73,10 @@ public class RobotContainer {
         joystick.a().onTrue(Commands.runOnce(intake::angleDown)).onFalse(Commands.runOnce(intake::stopAngle));
         joystick.y().onTrue(Commands.runOnce(intake::angleUp)).onFalse(Commands.runOnce(intake::stopAngle));
         joystick.rightTrigger().onTrue(Commands.runOnce(intake::pull)).onFalse(Commands.runOnce(intake::stopIntake));
+
+        joystick.leftTrigger().onTrue(Commands.runOnce(()->shooter.updateSetpoint(RotationsPerSecond.of(50)))
+        .alongWith(Commands.runOnce(conveyor::pull))).onFalse(Commands.runOnce(shooter::stop).alongWith(Commands.runOnce(conveyor::stopConveyor)));
+
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 	
