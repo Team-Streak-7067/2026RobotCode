@@ -11,13 +11,15 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class Constants {
 	public static class IntakeConstants {
-		public static final int angleMotorCANID = 0;
-		public static final int intakeMotorCANID = 0;
+		public static final int angleMotorCANID = 1;
+		public static final int intakeMotorCANID = 2;
 
         public static final int limitSwitchID = 0;
 
 		public static final double intakeSpeed = .5;
-		public static final double angleSpeed = .2;
+		public static final double angleSpeed = .5;
+
+        public static final double gearRatio = 1/100;
 
 		public static final Angle angleForwardSoftLimit = Rotations.of(0);
 		public static final Angle angleReverseSoftLimit = Rotations.of(0);

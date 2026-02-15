@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase {
 	static Intake instance = new Intake();
 	
 	TalonFX angleMotor = new TalonFX(IntakeConstants.angleMotorCANID);
-	TalonFX intakeMotor = new TalonFX(IntakeConstants.angleMotorCANID);
+	TalonFX intakeMotor = new TalonFX(IntakeConstants.intakeMotorCANID);
 
     DigitalInput limitSwitch = new DigitalInput(IntakeConstants.limitSwitchID);
 
@@ -58,7 +58,7 @@ public class Intake extends SubsystemBase {
 
 	void configMotors() {
 		TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
-		intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		intakeConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 		intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 		intakeMotor.getConfigurator().apply(intakeConfig);
 
