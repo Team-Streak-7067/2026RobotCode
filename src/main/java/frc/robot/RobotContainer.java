@@ -4,13 +4,11 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-
-import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +16,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.conveyor.Run;
+import frc.robot.commands.conveyor.StopConveyor;
+import frc.robot.commands.shooter.Stop;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -74,13 +75,17 @@ public class RobotContainer {
         joystick.y().onTrue(Commands.runOnce(intake::angleUp)).onFalse(Commands.runOnce(intake::stopAngle));
         joystick.rightTrigger().onTrue(Commands.runOnce(intake::pull)).onFalse(Commands.runOnce(intake::stopIntake));
 
-        joystick.leftTrigger().onTrue(Commands.runOnce(()->shooter.updateSetpoint(RotationsPerSecond.of(50)))
-        .alongWith(Commands.runOnce(conveyor::pull))).onFalse(Commands.runOnce(shooter::stop).alongWith(Commands.runOnce(conveyor::stopConveyor)));
+        joystick.leftTrigger().onTrue(Commands.runOnce(()->shooter.updateSetpoint(RotationsPerSecond.of(60)))
+        .alongWith(new Run())).onFalse(new Stop().alongWith(new StopConveyor()));
+
+        joystick.b().onTrue(new Run()).onFalse(new StopConveyor());
+
+        joystick.povDown().onTrue(Commands.runOnce(conveyor::reverse)).onFalse(new StopConveyor());
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 	
 	public Command getAutonomousCommand() {
-		return Commands.print("No autonomous command configured");
+		return Commands.print("No autonomous command configured ga7ba");
 	}
 }

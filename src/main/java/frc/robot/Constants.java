@@ -38,8 +38,8 @@ public final class Constants {
         public static final int conveyorMotorCANID = 3;
         public static final int alignMotorCANID = 4;
 
-        public static final double conveyorSpeed = .3;
-        public static final double alignSpeed = .3;
+        public static final double conveyorSpeed = .7;
+        public static final double alignSpeed = .4;
     }
 
     public static class ShooterConstants {

@@ -33,12 +33,12 @@ public class Conveyor extends SubsystemBase {
 	void configMotors() {
 		TalonFXConfiguration convCfg = new TalonFXConfiguration();
 		convCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-		convCfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		convCfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 		conveyorMotor.getConfigurator().apply(convCfg);
 
 		TalonFXConfiguration alignCfg = new TalonFXConfiguration();
 		alignCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-		alignCfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		alignCfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 		alignMotor.getConfigurator().apply(alignCfg);
 	}
 
@@ -56,6 +56,11 @@ public class Conveyor extends SubsystemBase {
 
 	public void stopAlign() {
 		alignMotor.stopMotor();
+	}
+
+	public void reverse() {
+		conveyorMotor.set(-ConveyorConstants.conveyorSpeed/2);
+		alignMotor.set(-ConveyorConstants.alignSpeed/2);
 	}
 
 	public void stopAll() {
