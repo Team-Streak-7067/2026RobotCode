@@ -6,12 +6,13 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Robot;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shooter.ShooterState;
 
 public class SpinUp extends InstantCommand {
 	Shooter shooter = Shooter.getInstance();
-	Distance dist; // TODO switch out with proper distance when swerve and odometry is implemented
+	Distance dist = Robot.m_robotContainer.getDistanceToHub();
 	
 	public SpinUp() {
 		addRequirements(shooter);

@@ -31,16 +31,11 @@ public class Vision extends SubsystemBase {
 
 	Vision(String name) {
 		this.name = name;
-		// LimelightHelpers.setCropWindow(name, -1, 1, -0.7, 0.7);
+		LimelightHelpers.setCropWindow(name, -1, 1, -0.7, 0.7);
 	}
 	
 	@Override
 	public void periodic() {
-		SmartDashboard.putNumber("FTID-" + name, getTID());
-		if (mt != null) {
-			SmartDashboard.putNumber("Dist-" + name, mt.avgTagDist);
-		} 
-
 		// might need to change yaw from poseEst yaw to pigeon yaw (ido said this but im not sure)
 		LimelightHelpers.SetRobotOrientation(name, drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 		
@@ -57,7 +52,12 @@ public class Vision extends SubsystemBase {
 
 	void addVisionMeasurements() {
 		mt = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
-		SmartDashboard.putNumber("mt tag count", mt.tagCount);
+		
+		SmartDashboard.putNumber("FTID-" + name, getTID());
+		// try {
+		// 	SmartDashboard.putNumber("mt tag count", mt.tagCount);
+		// 	SmartDashboard.putNumber("Dist-" + name, mt.avgTagDist);
+		// } catch (Exception e) {}
 
 		boolean[] conds = {
 			// no tag detected
@@ -66,6 +66,7 @@ public class Vision extends SubsystemBase {
 			drivetrain.getPigeon2().getAngularVelocityZDevice().asSupplier().get().abs(RotationsPerSecond) > SwerveConstants.maxAngularVelocity.abs(RotationsPerSecond),
 			// if measurement pose is outside of field
 			!FieldConstants.field.contains(mt.pose.getTranslation()),
+			// robot is not in air,
 		};
 		
 		for (int i = 0; i < conds.length; i++) {
@@ -75,12 +76,11 @@ public class Vision extends SubsystemBase {
 			}
 		}
 		
-		// TODO FILTER MEASUREMENTS
-		// if slipping do not trust odometry, wait for vision
-		// impact and crash detection reduces odometry trust
-		// dynamically change pose confidence and vision measurement confidence based on some conditions (?)
-
-		// fuckass latency compensation code		
+		double trust = .25;
+		trust /= mt.tagCount;
+		trust *= mt.avgTagDist;
+	
+		// fuckass latency compensation
 		Time latency = Milliseconds.of(LimelightHelpers.getLatency_Pipeline(name) + LimelightHelpers.getLatency_Capture(name));
 		ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
 		
@@ -93,7 +93,7 @@ public class Vision extends SubsystemBase {
 		);
 		
 		// copied shamelessly from limelight docs and slightly adjusted (megatag localization)
-		drivetrain.addVisionMeasurement(compensatedPose, mt.timestampSeconds, VecBuilder.fill(.2, .2, Double.MAX_VALUE));
+		drivetrain.addVisionMeasurement(compensatedPose, mt.timestampSeconds, VecBuilder.fill(trust, trust, Double.MAX_VALUE));
 	}
 
 	public static Vision getInstance() {
@@ -108,20 +108,15 @@ public class Vision extends SubsystemBase {
 	}
 
 	public double getTX() {
-		return getTV() ? LimelightHelpers.getTX(name) : -7665;
+		return getTV() ? LimelightHelpers.getTX(name) : -1;
 	}
 
 	public double getTY() {
-		return getTV() ? LimelightHelpers.getTY(name) : -7665;
+		return getTV() ? LimelightHelpers.getTY(name) : -1;
 	}
 
 	public int getTID() {
-		try {
-			return getTV() ? (int)LimelightHelpers.getFiducialID(name) : -7665;
-		} catch (Exception e) {
-			System.out.println("April tag id is a double??");
-			throw e;
-		}
+			return getTV() ? (int)LimelightHelpers.getFiducialID(name) : -1;
 	}
 
 	public String getCameraName() {
