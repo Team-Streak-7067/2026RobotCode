@@ -52,12 +52,16 @@ public class Vision extends SubsystemBase {
 
 	void addVisionMeasurements() {
 		mt = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+
+		if (mt == null) {
+			return;
+		}
 		
 		SmartDashboard.putNumber("FTID-" + name, getTID());
-		// try {
-		// 	SmartDashboard.putNumber("mt tag count", mt.tagCount);
-		// 	SmartDashboard.putNumber("Dist-" + name, mt.avgTagDist);
-		// } catch (Exception e) {}
+		try {
+			SmartDashboard.putNumber("mt tag count", mt.tagCount);
+			SmartDashboard.putNumber("Dist-" + name, mt.avgTagDist);
+		} catch (Exception e) {}
 
 		boolean[] conds = {
 			// no tag detected
