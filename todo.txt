@@ -1,21 +1,29 @@
-### ALL ###
-put in can ids
-gear ratios for everything
+### GENERAL ###
+point to hub
+write compound commands
+static shooting from everywhere
+shooting on the move (auto/teleop)
+automations for driver
 
 ## INTAKE
 angle motor soft limits
-check motor directions
 tune angle motor pid
 find openpos and resetpos for angle motor
 
 ## CONVEYOR
-check motor directions
-check speeds
 
 ## SHOOTER
-tune pid
 tune idle speed
 fill speed map with values
 
 #SWERVE
-sysid charachterize gains
+sysid characterize gains
+
+## VISION
+more intricate vision filtering
+! reorganize vision subsys cause its a mess
+! wrong position read from apriltags??
+
+## AUTON
+config pathplanner
+! running path does half of each step (half the distance/rotation)

@@ -4,28 +4,36 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.TSLib.leds.LedStrip;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
     LedStrip leds = new LedStrip(0, 9);
+	Field2d field = new Field2d();
 	
 	private final RobotContainer m_robotContainer;
+	static final CommandSwerveDrivetrain drivetrain = RobotContainer.drivetrain;
 	
 	public Robot() {
 		m_robotContainer = new RobotContainer();
+		SmartDashboard.putData(field);
 	}
 
-    @Override
-    public void robotInit() {
-    }
-	
 	@Override
 	public void robotPeriodic() {
 		CommandScheduler.getInstance().run();
+		field.setRobotPose(drivetrain.getState().Pose);
+
+		// FIXME remove later
+		SmartDashboard.putNumber("dist to hub", m_robotContainer.getDistanceToHub().in(Meters));
 	}
 	
 	@Override
