@@ -12,18 +12,27 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.conveyor.Run;
@@ -58,6 +67,9 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+	SendableChooser<Command> autoChooser;
+	RobotConfig robotConfig;
+
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public static final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
@@ -68,6 +80,37 @@ public class RobotContainer {
 
 	public RobotContainer() {
 		configureBindings();
+	}
+
+	void configPathplanner() {
+		try {
+			robotConfig = RobotConfig.fromGUISettings();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		AutoBuilder.configure(
+			()->drivetrain.getState().Pose,
+			drivetrain::resetPose,
+			()->drivetrain.getState().Speeds,
+			(speeds, ff)->drivetrain.setControl(driveRobot
+				// .withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
+                .withSpeeds(speeds)
+				.withWheelForceFeedforwardsX(ff.robotRelativeForcesX())
+				.withWheelForceFeedforwardsY(ff.robotRelativeForcesY())
+			),
+			new PPHolonomicDriveController(
+				new PIDConstants(AutoConstants.driveKp, AutoConstants.driveKi, AutoConstants.driveKd),
+				new PIDConstants(AutoConstants.steerKp, AutoConstants.steerKi, AutoConstants.steerKd)
+			),
+			robotConfig,
+			()->DriverStation.getAlliance().orElse(Alliance.Blue) == DriverStation.Alliance.Red,
+			drivetrain
+		);
+
+		autoChooser = AutoBuilder.buildAutoChooser();
+		Commands.runOnce(FollowPathCommand::warmupCommand);
+		SmartDashboard.putData("Auto Chooser", autoChooser);
 	}
 
     Pose2d getRobotPose() {
@@ -153,6 +196,6 @@ public class RobotContainer {
     }
 	
 	public Command getAutonomousCommand() {
-		return Commands.print("No autonomous command configured ga7ba");
+		return autoChooser.getSelected();
 	}
 }
