@@ -5,9 +5,6 @@ shooting on the move (auto/teleop)
 automations for driver
 
 ## INTAKE
-angle motor soft limits
-tune angle motor pid
-find openpos and resetpos for angle motor
 
 ## CONVEYOR
 
@@ -20,7 +17,6 @@ fill speed map with values
 ## VISION
 more intricate vision filtering
 ! reorganize vision subsys cause its a mess
-! wrong position read from apriltags??
 
 ## AUTON
 config pathplanner

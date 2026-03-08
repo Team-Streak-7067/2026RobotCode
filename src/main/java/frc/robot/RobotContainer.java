@@ -119,6 +119,7 @@ public class RobotContainer {
         joystick.b().whileTrue(
 			drivetrain.applyRequest(()->face
 				.withTargetDirection(getDirectionToHub())
+                .withMaxAbsRotationalRate(MaxAngularRate / 1.5)
 				.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                 .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
 			)

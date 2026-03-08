@@ -67,9 +67,9 @@ public class Intake extends SubsystemBase {
 
 		TalonFXConfiguration angleConfig = new TalonFXConfiguration();
         //probably dont need reverse soft limit because we reset pos by limit switch every time we close intake
-		angleConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+		angleConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 		angleConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = IntakeConstants.angleForwardSoftLimit.in(Rotations);
-		angleConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
+		angleConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 		angleConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = IntakeConstants.angleReverseSoftLimit.in(Rotations);
 
 		angleConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;

@@ -20,8 +20,7 @@ public class SpinUp extends InstantCommand {
 	
 	@Override
 	public void initialize() {
-		dist = Robot.m_robotContainer.getDistanceToHub();
-		shooter.spinUp(dist);
+		shooter.spinUp(Robot.m_robotContainer.getDistanceToHub());
 		shooter.setState(ShooterState.Shooting);
 	}
 }

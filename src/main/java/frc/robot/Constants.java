@@ -27,7 +27,7 @@ public final class Constants {
 
         public static final double gearRatio = 1/100;
 
-		public static final Angle angleForwardSoftLimit = Rotations.of(0);
+		public static final Angle angleForwardSoftLimit = Rotations.of(-1);
 		public static final Angle angleReverseSoftLimit = Rotations.of(-113.15);
 		
 		public static final double angleGearRatio = 1;
@@ -60,8 +60,8 @@ public final class Constants {
         .withKP(.25).withKI(0).withKD(0).withKA(0).withKV(0);
 
         public static final double[][] speedMapData = {
-			{1.25, 60},
-			{1.7, 65},
+			{1.25, 65},
+			{1.7, 70},
         };
     }
 
@@ -72,15 +72,15 @@ public final class Constants {
 
     public class VisionConstants {
         public static final String llName = "limelight-front";
-		public static final int updateFrequency = 5; // once every 3 periodic loops
+		public static final int updateFrequency = 5; // once every x periodic loops
     }
 
 	public class SwerveConstants {
 		public static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(1.5);
 		
-		public static final double rotateKp = 12;
+		public static final double rotateKp = 20;
 		public static final double rotateKi = 0;
-		public static final double rotateKd = 0;
+		public static final double rotateKd = 2;
 
 	}
 
