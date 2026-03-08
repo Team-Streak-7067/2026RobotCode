@@ -72,15 +72,15 @@ public final class Constants {
 
     public class VisionConstants {
         public static final String llName = "limelight-front";
-		public static final int updateFrequency = 5; // once every x periodic loops
+		public static final int updateFrequency = 10; // once every x periodic loops
     }
 
 	public class SwerveConstants {
 		public static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(1.5);
 		
-		public static final double rotateKp = 20;
+		public static final double rotateKp = 15;
 		public static final double rotateKi = 0;
-		public static final double rotateKd = 2;
+		public static final double rotateKd = 1;
 
 	}
 

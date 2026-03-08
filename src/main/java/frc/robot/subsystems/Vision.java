@@ -40,7 +40,6 @@ public class Vision extends SubsystemBase {
 	public void periodic() {
 		counter = counter++ % VisionConstants.updateFrequency;
 		
-		// might need to change yaw from poseEst yaw to pigeon yaw (ido said this but im not sure)
 		LimelightHelpers.SetRobotOrientation(name, drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 		
 		if (counter == 0) {
@@ -89,7 +88,7 @@ public class Vision extends SubsystemBase {
 
 		double trust = .25;
 		trust /= mt.tagCount;
-		trust *= mt.avgTagDist;
+		trust *= mt.avgTagDist / 1.5;
 
 		double dirTrust = Math.pow(Math.E, mt.avgTagDist * mt.avgTagDist);
 
