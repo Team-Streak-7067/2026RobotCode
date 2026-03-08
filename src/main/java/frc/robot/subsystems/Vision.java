@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
@@ -24,6 +25,7 @@ import frc.robot.RobotContainer;
 
 public class Vision extends SubsystemBase {
 	static Vision instance = null;
+	static double counter = 0;
 
 	final String name;
 	PoseEstimate mt;
@@ -36,10 +38,14 @@ public class Vision extends SubsystemBase {
 	
 	@Override
 	public void periodic() {
+		counter = counter++ % VisionConstants.updateFrequency;
+		
 		// might need to change yaw from poseEst yaw to pigeon yaw (ido said this but im not sure)
 		LimelightHelpers.SetRobotOrientation(name, drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 		
-		addVisionMeasurements();
+		if (counter == 0) {
+			addVisionMeasurements();
+		}
 	}
 
 	public Pose2d getPose() {
@@ -54,6 +60,7 @@ public class Vision extends SubsystemBase {
 		mt = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
 
 		if (mt == null) {
+			System.out.println("MT is null, skipping");
 			return;
 		}
 		
@@ -63,26 +70,30 @@ public class Vision extends SubsystemBase {
 			SmartDashboard.putNumber("Dist-" + name, mt.avgTagDist);
 		} catch (Exception e) {}
 
+		if (mt.tagCount == 0) {
+			return;
+		}
+		
 		boolean[] conds = {
-			// no tag detected
-			mt.tagCount == 0,
 			// if spinning fast
 			drivetrain.getPigeon2().getAngularVelocityZDevice().asSupplier().get().abs(RotationsPerSecond) > SwerveConstants.maxAngularVelocity.abs(RotationsPerSecond),
 			// if measurement pose is outside of field
 			!FieldConstants.field.contains(mt.pose.getTranslation()),
-			// robot is not in air,
 		};
 		
 		for (int i = 0; i < conds.length; i++) {
 			if (conds[i]) {
-				// System.out.println(i + "th check failed");
 				return;
 			}
 		}
-		
+
 		double trust = .25;
 		trust /= mt.tagCount;
 		trust *= mt.avgTagDist;
+
+		double dirTrust = Math.pow(Math.E, mt.avgTagDist * mt.avgTagDist);
+
+		System.out.println("VM passed (trust: " + trust + ")");
 	
 		// fuckass latency compensation
 		Time latency = Milliseconds.of(LimelightHelpers.getLatency_Pipeline(name) + LimelightHelpers.getLatency_Capture(name));
@@ -95,8 +106,9 @@ public class Vision extends SubsystemBase {
 				-fieldSpeeds.omegaRadiansPerSecond * latency.in(Seconds)
 			)
 		);
-		
+
 		// copied shamelessly from limelight docs and slightly adjusted (megatag localization)
+		// drivetrain.addVisionMeasurement(compensatedPose, mt.timestampSeconds, VecBuilder.fill(trust, trust, dirTrust));
 		drivetrain.addVisionMeasurement(compensatedPose, mt.timestampSeconds, VecBuilder.fill(trust, trust, Double.MAX_VALUE));
 	}
 

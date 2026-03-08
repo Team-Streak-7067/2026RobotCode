@@ -12,7 +12,7 @@ import frc.robot.subsystems.Shooter.ShooterState;
 
 public class SpinUp extends InstantCommand {
 	Shooter shooter = Shooter.getInstance();
-	Distance dist = Robot.m_robotContainer.getDistanceToHub();
+	Distance dist; 
 	
 	public SpinUp() {
 		addRequirements(shooter);
@@ -20,6 +20,7 @@ public class SpinUp extends InstantCommand {
 	
 	@Override
 	public void initialize() {
+		dist = Robot.m_robotContainer.getDistanceToHub();
 		shooter.spinUp(dist);
 		shooter.setState(ShooterState.Shooting);
 	}

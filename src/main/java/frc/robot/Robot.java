@@ -19,7 +19,7 @@ public class Robot extends TimedRobot {
     LedStrip leds = new LedStrip(0, 9);
 	Field2d field = new Field2d();
 	
-	public static final RobotContainer m_robotContainer = new RobotContainer();;
+	public static final RobotContainer m_robotContainer = new RobotContainer();
 	static final CommandSwerveDrivetrain drivetrain = RobotContainer.drivetrain;
 	
 	public Robot() {

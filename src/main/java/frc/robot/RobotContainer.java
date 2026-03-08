@@ -25,9 +25,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.conveyor.Run;
 import frc.robot.commands.conveyor.StopConveyor;
+import frc.robot.commands.intake.UpdateSetpoint;
+import frc.robot.commands.shooter.SpinUp;
 import frc.robot.commands.shooter.Stop;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Conveyor;
@@ -128,23 +131,25 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Reset the field-centric heading on left bumper press.
-        joystick.leftBumper().and(joystick.rightBumper()).onTrue(
-            drivetrain.runOnce(drivetrain::seedFieldCentric));
+        joystick.leftBumper().and(joystick.rightBumper()).onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         joystick.a().onTrue(Commands.runOnce(intake::angleDown)).onFalse(Commands.runOnce(intake::stopAngle));
         joystick.y().onTrue(Commands.runOnce(intake::angleUp)).onFalse(Commands.runOnce(intake::stopAngle));
         joystick.rightTrigger().onTrue(Commands.runOnce(intake::pull)).onFalse(Commands.runOnce(intake::stopIntake));
 
+        joystick.povRight().onTrue(new UpdateSetpoint(IntakeConstants.openPos));
+        joystick.povLeft().onTrue(new UpdateSetpoint(IntakeConstants.resetPos));
+
         // TODO logger start/stop binds
 
-        joystick.leftTrigger().onTrue(Commands.runOnce(()->shooter.updateSetpoint(RotationsPerSecond.of(50)))
-        .alongWith(new Run())).onFalse(new Stop().alongWith(new StopConveyor()));
+        joystick.leftTrigger().onTrue(new SpinUp().alongWith(new Run()))
+        .onFalse(new Stop().alongWith(new StopConveyor()));
 
         joystick.povUp().onTrue(new Run()).onFalse(new StopConveyor());
         joystick.povDown().onTrue(Commands.runOnce(conveyor::reverse)).onFalse(new StopConveyor());

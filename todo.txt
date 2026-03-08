@@ -1,5 +1,4 @@
 ### GENERAL ###
-point to hub
 write compound commands
 static shooting from everywhere
 shooting on the move (auto/teleop)
@@ -17,7 +16,6 @@ tune idle speed
 fill speed map with values
 
 #SWERVE
-sysid characterize gains
 
 ## VISION
 more intricate vision filtering

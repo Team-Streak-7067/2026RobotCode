@@ -22,22 +22,22 @@ public final class Constants {
 
         public static final int limitSwitchID = 0;
 
-		public static final double intakeSpeed = .7;
+		public static final double intakeSpeed = .6;
 		public static final double angleSpeed = .5;
 
         public static final double gearRatio = 1/100;
 
 		public static final Angle angleForwardSoftLimit = Rotations.of(0);
-		public static final Angle angleReverseSoftLimit = Rotations.of(0);
+		public static final Angle angleReverseSoftLimit = Rotations.of(-113.15);
 		
 		public static final double angleGearRatio = 1;
 		
 		public static final Slot0Configs angleS0C = new Slot0Configs()
-		.withKP(0).withKI(0).withKD(0).withKG(0)
+		.withKP(5).withKI(0).withKD(.2).withKG(0)
 		.withGravityType(GravityTypeValue.Arm_Cosine);
 		
 		public static final Angle resetPos = Rotations.of(0);
-		public static final Angle openPos = Rotations.of(0);
+		public static final Angle openPos = Rotations.of(-113.12);
 	}
 
     public static class ConveyorConstants {
@@ -72,6 +72,7 @@ public final class Constants {
 
     public class VisionConstants {
         public static final String llName = "limelight-front";
+		public static final int updateFrequency = 5; // once every 3 periodic loops
     }
 
 	public class SwerveConstants {
