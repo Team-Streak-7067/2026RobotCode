@@ -33,6 +33,12 @@ public class Intake extends SubsystemBase {
 		configMotors();
 		resetPos();
 		CommandWidget.addWidget("Reset intake pos", ()->angleMotor.setPosition(0), true);
+		CommandWidget.add2StateWidget(
+			"Coast intake",
+			()->angleMotor.setNeutralMode(NeutralModeValue.Coast),
+			()->angleMotor.setNeutralMode(NeutralModeValue.Brake),
+			true
+		);
 	}
 	
 	@Override

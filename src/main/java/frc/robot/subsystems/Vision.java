@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
@@ -90,7 +89,7 @@ public class Vision extends SubsystemBase {
 		trust /= mt.tagCount;
 		trust *= mt.avgTagDist / 1.5;
 
-		double dirTrust = Math.pow(Math.E, mt.avgTagDist * mt.avgTagDist);
+		// double dirTrust = Math.pow(Math.E, mt.avgTagDist * mt.avgTagDist);
 
 		System.out.println("VM passed (trust: " + trust + ")");
 	

@@ -38,11 +38,11 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.compound.Shoot;
-import frc.robot.commands.compound.StopShooting;
 import frc.robot.commands.conveyor.RunConveyor;
 import frc.robot.commands.conveyor.StopConveyor;
 import frc.robot.commands.intake.UpdateSetpoint;
 import frc.robot.commands.shooter.Idle;
+import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -75,6 +75,8 @@ public class RobotContainer {
 	SendableChooser<Command> autoChooser;
 	RobotConfig robotConfig;
 
+    double slowMult = 1;
+
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public static final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
@@ -85,6 +87,7 @@ public class RobotContainer {
 
 	public RobotContainer() {
 		configureBindings();
+        configPathplanner();
 	}
 
 	void configPathplanner() {
@@ -155,14 +158,19 @@ public class RobotContainer {
 	boolean isInNeutralZone() {
 		return FieldConstants.neutralZone.contains(getRobotPose().getTranslation());
 	}
+
+    void updateSlow(boolean slow) {
+        if (slow) slowMult = SwerveConstants.slowMult;
+        else slowMult = 1;
+    }
 	
 	private void configureBindings() {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * slowMult) // Drive forward with negative Y (forward)
+                    .withVelocityY(-joystick.getLeftX() * MaxSpeed * slowMult) // Drive left with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * slowMult) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -170,8 +178,8 @@ public class RobotContainer {
 			drivetrain.applyRequest(()->face
 				.withTargetDirection(getDirectionToHub())
                 .withMaxAbsRotationalRate(MaxAngularRate / 1.5)
-				.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+				.withVelocityX(-joystick.getLeftY() * MaxSpeed * slowMult) // Drive forward with negative Y (forward)
+                .withVelocityY(-joystick.getLeftX() * MaxSpeed * slowMult) // Drive left with negative X (left)
 			)
 		);
 
@@ -190,6 +198,7 @@ public class RobotContainer {
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().and(joystick.rightBumper()).onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        joystick.leftTrigger().onChange(Commands.runOnce(()->updateSlow(joystick.leftTrigger().getAsBoolean())));
 
         joystick.a()
 			.onTrue(Commands.runOnce(intake::angleDown))
@@ -199,16 +208,16 @@ public class RobotContainer {
 			.onTrue(Commands.runOnce(intake::angleUp))
 			.onFalse(Commands.runOnce(intake::stopAngle));
 
-        joystick.rightTrigger()
+        joystick.x()
 			.onTrue(Commands.runOnce(intake::pull))
 			.onFalse(Commands.runOnce(intake::stopIntake));
 
         joystick.povRight().onTrue(new UpdateSetpoint(IntakeConstants.openPos));
         joystick.povLeft().onTrue(new UpdateSetpoint(IntakeConstants.resetPos));
 
-        joystick.leftTrigger()
+        joystick.rightTrigger()
 			.onTrue(new Shoot())
-			.onFalse(new StopShooting());
+			.onFalse(new StopConveyor().alongWith(new StopShooter()));
 
         joystick.povUp()
 			.onTrue(new RunConveyor())

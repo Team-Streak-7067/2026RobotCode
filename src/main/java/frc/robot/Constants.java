@@ -22,7 +22,7 @@ public final class Constants {
 
         public static final int limitSwitchID = 0;
 
-		public static final double intakeSpeed = .6;
+		public static final double intakeSpeed = .85;
 		public static final double angleSpeed = .5;
 
         public static final double gearRatio = 1/100;
@@ -44,7 +44,7 @@ public final class Constants {
         public static final int conveyorMotorCANID = 3;
         public static final int alignMotorCANID = 4;
 
-        public static final double conveyorSpeed = .9;
+        public static final double conveyorSpeed = .7;
         public static final double alignSpeed = .7;
     }
 
@@ -60,8 +60,8 @@ public final class Constants {
         .withKP(.25).withKI(0).withKD(0).withKA(0).withKV(0);
 
         public static final double[][] speedMapData = {
-			{1.25, 65},
-			{1.7, 70},
+			{1.25, 62.5},
+			{1.7, 67.5},
         };
     }
 
@@ -72,7 +72,7 @@ public final class Constants {
 
     public class VisionConstants {
         public static final String llName = "limelight-front";
-		public static final int updateFrequency = 10; // once every x periodic loops
+		public static final int updateFrequency = 5; // once every x periodic loops
     }
 
 	public class SwerveConstants {
@@ -82,6 +82,7 @@ public final class Constants {
 		public static final double rotateKi = 0;
 		public static final double rotateKd = 1;
 
+		public static final double slowMult = 0.3;
 	}
 
 	public class AutoConstants {

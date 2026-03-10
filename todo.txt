@@ -1,11 +1,11 @@
 ### GENERAL ###
 test compound commands
-static shooting from everywhere
 shooting on the move (auto/teleop)
 automations for driver:
 - pressing align to hub while in neutral zone aims you for delivery into closest bump/trench
 - while aligned and in alliance zone, confirm button to shoot
 - slow button for swerve
+- under trench alignment for easy passing
 
 
 ## INTAKE
@@ -19,7 +19,9 @@ tune idle speed
 #SWERVE
 
 ## VISION
-! reorganize vision subsys cause its a mess
 
 ## AUTON
-! running path does half of each step (half the distance/rotation)
+
+## FIXES
+! reorganize vision subsys cause its a mess
+!! input delay/discarding causing lag and robot bullshittery

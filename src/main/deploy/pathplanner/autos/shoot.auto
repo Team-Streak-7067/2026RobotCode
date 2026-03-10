@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "shoot-1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "shoot-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeDown"
+                }
+              }
+            ]
           }
         },
         {
