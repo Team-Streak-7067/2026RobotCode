@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shooter.ShooterState;
 
-public class Stop extends InstantCommand {
+public class StopShooter extends InstantCommand {
 	Shooter shooter = Shooter.getInstance();
 	
-	public Stop() {
+	public StopShooter() {
 		addRequirements(shooter);
 	}
 	

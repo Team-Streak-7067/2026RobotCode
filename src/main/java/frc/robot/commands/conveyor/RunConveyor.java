@@ -7,10 +7,10 @@ package frc.robot.commands.conveyor;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Conveyor;
 
-public class Run extends InstantCommand {
+public class RunConveyor extends InstantCommand {
 	Conveyor conv = Conveyor.getInstance();
 	
-	public Run() {
+	public RunConveyor() {
 		addRequirements(conv);
 	}
 	

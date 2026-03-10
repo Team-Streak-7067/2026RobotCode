@@ -1,23 +1,25 @@
 ### GENERAL ###
-write compound commands
+test compound commands
 static shooting from everywhere
 shooting on the move (auto/teleop)
-automations for driver
+automations for driver:
+- pressing align to hub while in neutral zone aims you for delivery into closest bump/trench
+- while aligned and in alliance zone, confirm button to shoot
+- slow button for swerve
+
 
 ## INTAKE
 
 ## CONVEYOR
 
 ## SHOOTER
-tune idle speed
 fill speed map with values
+tune idle speed
 
 #SWERVE
 
 ## VISION
-more intricate vision filtering
 ! reorganize vision subsys cause its a mess
 
 ## AUTON
-config pathplanner
 ! running path does half of each step (half the distance/rotation)

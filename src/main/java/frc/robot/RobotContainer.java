@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -31,16 +32,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.conveyor.Run;
+import frc.robot.commands.auto.ShootAuto;
+import frc.robot.commands.compound.Shoot;
+import frc.robot.commands.compound.StopShooting;
+import frc.robot.commands.conveyor.RunConveyor;
 import frc.robot.commands.conveyor.StopConveyor;
 import frc.robot.commands.intake.UpdateSetpoint;
-import frc.robot.commands.shooter.SpinUp;
-import frc.robot.commands.shooter.Stop;
+import frc.robot.commands.shooter.Idle;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -111,6 +113,11 @@ public class RobotContainer {
 			drivetrain
 		);
 
+		NamedCommands.registerCommand("shooterIdle",new Idle());
+		NamedCommands.registerCommand("shoot",new ShootAuto());
+		NamedCommands.registerCommand("intakeDown", new UpdateSetpoint(IntakeConstants.openPos));
+		NamedCommands.registerCommand("intakeUp", new UpdateSetpoint(IntakeConstants.resetPos));
+
 		autoChooser = AutoBuilder.buildAutoChooser();
 		Commands.runOnce(FollowPathCommand::warmupCommand);
 		SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -173,6 +180,7 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
+        // TODO logger start/stop binds
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -183,20 +191,32 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().and(joystick.rightBumper()).onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        joystick.a().onTrue(Commands.runOnce(intake::angleDown)).onFalse(Commands.runOnce(intake::stopAngle));
-        joystick.y().onTrue(Commands.runOnce(intake::angleUp)).onFalse(Commands.runOnce(intake::stopAngle));
-        joystick.rightTrigger().onTrue(Commands.runOnce(intake::pull)).onFalse(Commands.runOnce(intake::stopIntake));
+        joystick.a()
+			.onTrue(Commands.runOnce(intake::angleDown))
+			.onFalse(Commands.runOnce(intake::stopAngle));
+
+        joystick.y()
+			.onTrue(Commands.runOnce(intake::angleUp))
+			.onFalse(Commands.runOnce(intake::stopAngle));
+
+        joystick.rightTrigger()
+			.onTrue(Commands.runOnce(intake::pull))
+			.onFalse(Commands.runOnce(intake::stopIntake));
 
         joystick.povRight().onTrue(new UpdateSetpoint(IntakeConstants.openPos));
         joystick.povLeft().onTrue(new UpdateSetpoint(IntakeConstants.resetPos));
 
-        // TODO logger start/stop binds
+        joystick.leftTrigger()
+			.onTrue(new Shoot())
+			.onFalse(new StopShooting());
 
-        joystick.leftTrigger().onTrue(new SpinUp().alongWith(new Run()))
-        .onFalse(new Stop().alongWith(new StopConveyor()));
+        joystick.povUp()
+			.onTrue(new RunConveyor())
+			.onFalse(new StopConveyor());
 
-        joystick.povUp().onTrue(new Run()).onFalse(new StopConveyor());
-        joystick.povDown().onTrue(Commands.runOnce(conveyor::reverse)).onFalse(new StopConveyor());
+        joystick.povDown()
+			.onTrue(Commands.runOnce(conveyor::reverse))
+			.onFalse(new StopConveyor());
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
