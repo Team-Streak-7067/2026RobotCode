@@ -40,6 +40,8 @@ import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.compound.Shoot;
 import frc.robot.commands.conveyor.RunConveyor;
 import frc.robot.commands.conveyor.StopConveyor;
+import frc.robot.commands.intake.Pull;
+import frc.robot.commands.intake.StopIntake;
 import frc.robot.commands.intake.UpdateSetpoint;
 import frc.robot.commands.shooter.Idle;
 import frc.robot.commands.shooter.StopShooter;
@@ -120,6 +122,8 @@ public class RobotContainer {
 		NamedCommands.registerCommand("shoot",new ShootAuto());
 		NamedCommands.registerCommand("intakeDown", new UpdateSetpoint(IntakeConstants.openPos));
 		NamedCommands.registerCommand("intakeUp", new UpdateSetpoint(IntakeConstants.resetPos));
+		NamedCommands.registerCommand("intakeStart", new Pull());
+		NamedCommands.registerCommand("intakeStop", new StopIntake());
 
 		autoChooser = AutoBuilder.buildAutoChooser();
 		Commands.runOnce(FollowPathCommand::warmupCommand);

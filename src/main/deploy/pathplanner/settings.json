@@ -3,8 +3,9 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "line 3m rot",
+    "cycle",
     "line 3m",
+    "line 3m rot",
     "shoot"
   ],
   "autoFolders": [],

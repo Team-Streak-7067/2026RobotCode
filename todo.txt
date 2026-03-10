@@ -4,24 +4,21 @@ shooting on the move (auto/teleop)
 automations for driver:
 - pressing align to hub while in neutral zone aims you for delivery into closest bump/trench
 - while aligned and in alliance zone, confirm button to shoot
-- slow button for swerve
 - under trench alignment for easy passing
 
+### FIXES ###
+! reorganize vision subsys cause its a mess
+!! input delay/discarding causing lag and robot bullshittery
 
 ## INTAKE
 
 ## CONVEYOR
 
 ## SHOOTER
-fill speed map with values
 tune idle speed
 
-#SWERVE
+## SWERVE
 
 ## VISION
 
 ## AUTON
-
-## FIXES
-! reorganize vision subsys cause its a mess
-!! input delay/discarding causing lag and robot bullshittery
