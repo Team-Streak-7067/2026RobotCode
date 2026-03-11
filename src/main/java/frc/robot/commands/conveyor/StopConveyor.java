@@ -16,6 +16,7 @@ public class StopConveyor extends InstantCommand {
 	
 	@Override
 	public void initialize() {
-		conv.stopAll();
+		conv.stopConveyor();
+		conv.stopAlign();
 	}
 }

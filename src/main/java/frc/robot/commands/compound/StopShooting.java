@@ -4,11 +4,11 @@
 
 package frc.robot.commands.compound;
 
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.conveyor.StopConveyor;
 import frc.robot.commands.shooter.StopShooter;
 
-public class StopShooting extends ParallelCommandGroup {
+public class StopShooting extends SequentialCommandGroup {
 	public StopShooting() {
 		addCommands(
 			new StopConveyor(),

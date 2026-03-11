@@ -22,7 +22,7 @@ public final class Constants {
 
         public static final int limitSwitchID = 0;
 
-		public static final double intakeSpeed = .85;
+		public static final double intakeSpeed = .35;
 		public static final double angleSpeed = .5;
 
         public static final double gearRatio = 1/100;

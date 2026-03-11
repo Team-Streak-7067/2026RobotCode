@@ -228,8 +228,8 @@ public class RobotContainer {
 			.onFalse(new StopConveyor());
 
         joystick.povDown()
-			.onTrue(Commands.runOnce(conveyor::reverse))
-			.onFalse(new StopConveyor());
+			.onTrue(Commands.runOnce(conveyor::reverse).alongWith(Commands.runOnce(intake::push)))
+			.onFalse(new StopConveyor().alongWith(new StopIntake()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

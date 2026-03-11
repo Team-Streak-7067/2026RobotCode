@@ -11,6 +11,12 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -23,7 +29,7 @@ public class Intake extends SubsystemBase {
 	static Intake instance = new Intake();
 	
 	TalonFX angleMotor = new TalonFX(IntakeConstants.angleMotorCANID);
-	TalonFX intakeMotor = new TalonFX(IntakeConstants.intakeMotorCANID);
+	SparkFlex intakeMotor = new SparkFlex(IntakeConstants.intakeMotorCANID, MotorType.kBrushless);
 
     DigitalInput limitSwitch = new DigitalInput(IntakeConstants.limitSwitchID);
 
@@ -32,18 +38,11 @@ public class Intake extends SubsystemBase {
 	Intake() {
 		configMotors();
 		resetPos();
-		CommandWidget.addWidget("Reset intake pos", ()->angleMotor.setPosition(0), true);
-		CommandWidget.add2StateWidget(
-			"Coast intake",
-			()->angleMotor.setNeutralMode(NeutralModeValue.Coast),
-			()->angleMotor.setNeutralMode(NeutralModeValue.Brake),
-			true
-		);
+		initDashboard();
 	}
 	
 	@Override
 	public void periodic() {
-		// This method will be called once per scheduler run
 		SmartDashboard.putNumber("intake pos", getPosition().in(Rotations));
 	}
 
@@ -51,10 +50,6 @@ public class Intake extends SubsystemBase {
 		return instance;
 	}
 	
-	void updateDashboard() {
-		
-	}
-
 	void initDashboard() {
 		CommandWidget.addWidget("Reset Intake", ()->resetPos(), true);
 		CommandWidget.add2StateWidget(
@@ -66,10 +61,10 @@ public class Intake extends SubsystemBase {
 	}
 
 	void configMotors() {
-		TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
-		intakeConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-		intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-		intakeMotor.getConfigurator().apply(intakeConfig);
+		SparkFlexConfig intakeConfig = new SparkFlexConfig();
+		intakeConfig.idleMode(IdleMode.kBrake);
+		intakeConfig.inverted(false);
+		intakeMotor.configure(intakeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
 		TalonFXConfiguration angleConfig = new TalonFXConfiguration();
         //probably dont need reverse soft limit because we reset pos by limit switch every time we close intake
@@ -100,6 +95,10 @@ public class Intake extends SubsystemBase {
 
 	public void pull() {
 		intakeMotor.set(IntakeConstants.intakeSpeed);
+	}
+
+	public void push() {
+		intakeMotor.set(-IntakeConstants.intakeSpeed);
 	}
 
 	public void stopIntake() {

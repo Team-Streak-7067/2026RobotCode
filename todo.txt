@@ -8,6 +8,7 @@ automations for driver:
 
 ### FIXES ###
 ! reorganize vision subsys cause its a mess
+!! commands not finishing causing auto to get stuck
 !! input delay/discarding causing lag and robot bullshittery
 
 ## INTAKE

@@ -91,9 +91,7 @@ public class Vision extends SubsystemBase {
 
 		// double dirTrust = Math.pow(Math.E, mt.avgTagDist * mt.avgTagDist);
 
-		System.out.println("VM passed (trust: " + trust + ")");
-	
-		// fuckass latency compensation
+		// latency compensation
 		Time latency = Milliseconds.of(LimelightHelpers.getLatency_Pipeline(name) + LimelightHelpers.getLatency_Capture(name));
 		ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
 		
@@ -108,6 +106,8 @@ public class Vision extends SubsystemBase {
 		// copied shamelessly from limelight docs and slightly adjusted (megatag localization)
 		// drivetrain.addVisionMeasurement(compensatedPose, mt.timestampSeconds, VecBuilder.fill(trust, trust, dirTrust));
 		drivetrain.addVisionMeasurement(compensatedPose, mt.timestampSeconds, VecBuilder.fill(trust, trust, Double.MAX_VALUE));
+
+		SmartDashboard.putNumber(name + "trust", trust);
 	}
 
 	public static Vision getInstance() {
