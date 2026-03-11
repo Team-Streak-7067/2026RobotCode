@@ -97,6 +97,10 @@ public class RobotContainer {
 	final Trigger intakeButton = joystick.rightBumper().and(zeroHeadingButton.negate());
 	final Trigger confirmButton = joystick.povRight();
 
+	final Trigger inAllianceZone = new Trigger(()->FieldConstants.getScoringZone().contains(getRobotPose().getTranslation()));
+	final Trigger inNeutralZone = new Trigger(()->FieldConstants.neutralZone.contains(getRobotPose().getTranslation()));
+	final Trigger trenchActivator = new Trigger(limelight.get)
+
 	public RobotContainer() {
 		configureBindings();
         configPathplanner();
@@ -150,8 +154,6 @@ public class RobotContainer {
 
 		Rotation2d angle = hub.minus(robot).getAngle();
 
-        SmartDashboard.putNumber("angle to hub CCW+", angle.getDegrees());
-        
 		return angle;
 	}
 
@@ -161,17 +163,6 @@ public class RobotContainer {
 
         return Meters.of(hub.minus(robot).getNorm());
     }
-
-    boolean isInScoringZone() {
-		Rectangle2d zone = FieldConstants.getScoringZone();
-		Translation2d robot = getRobotPose().getTranslation();
-		
-		return zone.contains(robot);
-	}
-
-	boolean isInNeutralZone() {
-		return FieldConstants.neutralZone.contains(getRobotPose().getTranslation());
-	}
 
     void updateSlow(boolean slow) {
         slowMult = slow ? SwerveConstants.slowMult : 1;
@@ -196,6 +187,12 @@ public class RobotContainer {
 			)
 		);
 
+		//  TODO
+
+		//alignbutton && trenchActivator .whileTrue(align to trench -> leds)
+		//alignbutton && allianceZone && !trenchActivator .whileTrue(align to hub -> leds -> confirm -> shoot)
+		//alignbutton && neutralZone && !trenchActivator .whileTrue(align to nearest opening to alliance zone -> confirm -> delivery) 
+
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
@@ -212,14 +209,6 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         zeroHeadingButton.onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
         slowButton.onChange(Commands.runOnce(()->updateSlow(slowButton.getAsBoolean())));
-
-        // joystick.a()
-		// 	.onTrue(Commands.runOnce(intake::angleDown))
-		// 	.onFalse(Commands.runOnce(intake::stopAngle));
-
-        // joystick.y()
-		// 	.onTrue(Commands.runOnce(intake::angleUp))
-		// 	.onFalse(Commands.runOnce(intake::stopAngle));
 
         intakeButton.onTrue(new Pull()).onFalse(new StopIntake());
 
