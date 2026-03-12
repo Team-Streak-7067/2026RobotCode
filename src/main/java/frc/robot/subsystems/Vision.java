@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,13 +39,8 @@ public class Vision extends SubsystemBase {
 	
 	@Override
 	public void periodic() {
-		counter = counter++ % VisionConstants.updateFrequency;
-		
 		LimelightHelpers.SetRobotOrientation(name, drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-		
-		if (counter == 0) {
-			addVisionMeasurements();
-		}
+		addVisionMeasurements();
 	}
 
 	public Pose2d getPose() {
@@ -131,6 +128,12 @@ public class Vision extends SubsystemBase {
 
 	public int getTID() {
 			return getTV() ? (int)LimelightHelpers.getFiducialID(name) : -1;
+	}
+
+	public Distance getDistanceToTag() {
+		if (mt == null) return Meters.of(0);
+
+		return Meters.of(mt.avgTagDist);
 	}
 
 	public String getCameraName() {

@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -38,6 +40,7 @@ import frc.TSLib.leds.SetLedState;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.LedConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.auto.ShootAuto;
@@ -49,6 +52,8 @@ import frc.robot.commands.intake.Pull;
 import frc.robot.commands.intake.StopIntake;
 import frc.robot.commands.intake.UpdateSetpoint;
 import frc.robot.commands.shooter.Idle;
+import frc.robot.commands.shooter.SpinUp;
+import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -75,33 +80,37 @@ public class RobotContainer {
     	.withHeadingPID(SwerveConstants.rotateKp, SwerveConstants.rotateKi, SwerveConstants.rotateKd) // this is found through swerve rotation sysid
     ;
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+	private final Telemetry logger = new Telemetry(MaxSpeed);
 
 	SendableChooser<Command> autoChooser;
 	RobotConfig robotConfig;
 
     double slowMult = 1;
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    final CommandXboxController driver = new CommandXboxController(0);
+	final CommandXboxController operator = new CommandXboxController(1);
 
     public static final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
     public static final Vision limelight = Vision.getInstance();
     public static final Intake intake = Intake.getInstance();
     public static final Conveyor conveyor = Conveyor.getInstance();
     public static final Shooter shooter = Shooter.getInstance();
-	public static final LedStrip leds = new LedStrip(0, 9);
+	public static final LedStrip leds = new LedStrip(LedConstants.port, LedConstants.count);
 
-	// BINDS for buttons
-	final Trigger zeroHeadingButton = joystick.leftBumper().and(joystick.rightBumper());
-	final Trigger slowButton = joystick.leftTrigger();
-	final Trigger alignButton = joystick.a();
-	final Trigger shootButton = joystick.rightTrigger();
-	final Trigger intakeDownButton = joystick.povDown();
-	final Trigger intakeUpButton = joystick.povUp();
-	final Trigger reverseButton = joystick.povLeft();
-	final Trigger intakeButton = joystick.rightBumper().and(zeroHeadingButton.negate());
-	final Trigger confirmButton = joystick.povRight();
+	// driver binds
+	final Trigger zeroHeadingButton = driver.leftBumper().and(driver.rightBumper());
+	final Trigger slowButton = driver.leftTrigger();
+	final Trigger alignButton = driver.a();
+	final Trigger confirmButton = driver.rightTrigger();
+	final Trigger reverseButton = driver.povLeft();
+	final Trigger intakeMacroButton = driver.rightBumper().and(zeroHeadingButton.negate());
+	
+	// operator binds
+	final Trigger shootButton = operator.rightTrigger();
+	final Trigger intakeDownButton = operator.povDown();
+	final Trigger intakeUpButton = operator.povUp();
 
+	// field triggers
 	final Trigger inAllianceZone = new Trigger(()->FieldConstants.getScoringZone().contains(getRobotPose().getTranslation()));
 	final Trigger inNeutralZone = new Trigger(()->FieldConstants.neutralZone.contains(getRobotPose().getTranslation()));
 	final Trigger trenchActivator = new Trigger(
@@ -113,7 +122,7 @@ public class RobotContainer {
 				if (tid == id) return true;
 			}
 
-			return false;
+			return limelight.getDistanceToTag().lte(VisionConstants.TrenchAlignDistanceThreshold);
 		}
 	);
 	final Trigger hubActivator = new Trigger(
@@ -198,66 +207,72 @@ public class RobotContainer {
 	
 	private void configureBindings() {
         drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * slowMult) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed * slowMult) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * slowMult * 2) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * slowMult * 2)
             )
         );
 
+		// DRIVER
 		alignButton.onFalse(new SetLedState(LedStatus.Off));
+		confirmButton.onFalse(new StopShooting());
+		inAllianceZone.and(()->shooter.getCurrentCommand() == null).whileTrue(new Idle());
+		inAllianceZone.onFalse(new StopShooter());
 		
-        alignButton.whileTrue(
-			drivetrain.applyRequest(()->face
-				.withTargetDirection(getDirectionToHub())
-                .withMaxAbsRotationalRate(MaxAngularRate / 1.5)
-				.withVelocityX(-joystick.getLeftY() * MaxSpeed * slowMult) // Drive forward with negative Y (forward)
-                .withVelocityY(-joystick.getLeftX() * MaxSpeed * slowMult) // Drive left with negative X (left)
-			).alongWith(new SetLedState(LedStatus.Ready))
-		);
-
+		// trench detection leds
 		trenchActivator.debounce(.15)
 		.and(alignButton.negate())
 			.onTrue(new SetLedState(LedStatus.Target))
 			.onFalse(new SetLedState(LedStatus.Off));
 		
-		// align to trench TODO continue
+		// align to trench
 		//alignbutton && trenchActivator .whileTrue(align to trench -> leds)
-		alignButton.and(trenchActivator).whileTrue(
+		alignButton.and(trenchActivator)
+		.whileTrue(
 			new AlignToTag().andThen(new SetLedState(LedStatus.Ready))
 		);
-		
+			
+		// FIXME gut feeling says this logic is wrong but i cant put my finger on it, test and debug and discover mistakes
+		// align to hub and confirm to shoot
 		//alignbutton && allianceZone && !trenchActivator .whileTrue(align to hub -> leds -> confirm -> shoot)
-		//alignbutton && neutralZone && !trenchActivator .whileTrue(align to nearest openi	ng to alliance zone -> confirm -> delivery) 
+		alignButton.and(inAllianceZone).and(trenchActivator.negate())
+		.whileTrue(
+			drivetrain.applyRequest(()->face
+				.withTargetDirection(getDirectionToHub())
+				.withMaxAbsRotationalRate(MaxAngularRate / 1.5)
+				// TODO reenable when shooting on the fly
+				// .withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
+				// .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
+			).alongWith(new SetLedState(LedStatus.Target)).alongWith(new SpinUp())
+			.withDeadline(new WaitUntilCommand(hubActivator).andThen(new WaitCommand(VisionConstants.tagDetectToAlignDelay)))
+			.andThen(new WaitUntilCommand(confirmButton).alongWith(new SetLedState(LedStatus.Waiting)))
+			.andThen(new Shoot().alongWith(new SetLedState(LedStatus.Ready)))
+		);
+		
+		//alignbutton && neutralZone && !trenchActivator .whileTrue(align to nearest opening to alliance zone -> confirm -> delivery) 
 
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        // add logger start/stop binds
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
         // Reset the field-centric heading on left bumper press.
         zeroHeadingButton.onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
         slowButton.onChange(Commands.runOnce(()->updateSlow(slowButton.getAsBoolean())));
 
-        intakeButton.onTrue(new Pull()).onFalse(new StopIntake());
-
-        intakeUpButton.onTrue(new UpdateSetpoint(IntakeConstants.resetPos));
-        intakeDownButton.onTrue(new UpdateSetpoint(IntakeConstants.openPos));
-
-        shootButton.onTrue(new Shoot()).onFalse(new StopShooting());
+        intakeMacroButton
+		.onTrue(new Pull().alongWith(new UpdateSetpoint(IntakeConstants.openPos)))
+		.onFalse(new StopIntake());
 
         reverseButton
-			.onTrue(Commands.runOnce(conveyor::reverse).alongWith(Commands.runOnce(intake::push)))
-			.onFalse(new StopConveyor().alongWith(new StopIntake()));
+		.onTrue(Commands.runOnce(conveyor::reverse).alongWith(Commands.runOnce(intake::push)))
+		.onFalse(new StopConveyor().alongWith(new StopIntake()));
+		
+		// OPERATOR
+        shootButton.onTrue(new Shoot()).onFalse(new StopShooting());
+        intakeUpButton.onTrue(new UpdateSetpoint(IntakeConstants.resetPos));
+        intakeDownButton.onTrue(new UpdateSetpoint(IntakeConstants.openPos));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

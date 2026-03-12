@@ -32,25 +32,21 @@ public class LedStrip extends SubsystemBase {
 		switch (status) {
 			case Off:
 				setColor(Color.kBlack);
-				counter++;
 				break;
 			case Idle:
 				setGradient(Color.kRed, Color.kOrange);
-				counter++;
 				break;
 			case Waiting:
 				setColor(Color.kAquamarine);
-				counter++;
 				break;
 			case Target:
-				setColor(Color.kPink);
-				counter++;
+				setColor(Color.kYellow);
 				break;
 			case Ready:
 				setColor(Color.kGreen);
-				counter++;
 				break;
 		}
+		counter++;
 
 		// TODO remove later
 		SmartDashboard.putString("ledState", status + "" + counter);

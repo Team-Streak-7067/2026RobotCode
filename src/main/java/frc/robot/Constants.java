@@ -1,8 +1,10 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -12,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -72,7 +75,9 @@ public final class Constants {
 
     public class VisionConstants {
         public static final String llName = "limelight-front";
-		public static final int updateFrequency = 5; // once every x periodic loops
+
+		public static final Distance TrenchAlignDistanceThreshold = Meters.of(1.5);
+		public static final Time tagDetectToAlignDelay = Seconds.of(1);
 
 		public static final int[] trenchTagsRed = {1, 6, 7, 12};
 		public static final int[] trenchTagsBlue = {17, 22, 23, 28};
