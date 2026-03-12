@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "shooterIdle"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -51,12 +57,6 @@
           "type": "named",
           "data": {
             "name": "shooterIdle"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intakeStop"
           }
         },
         {
