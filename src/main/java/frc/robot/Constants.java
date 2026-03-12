@@ -60,8 +60,8 @@ public final class Constants {
         .withKP(.25).withKI(0).withKD(0).withKA(0).withKV(0);
 
         public static final double[][] speedMapData = {
-			{1.25, 62.5},
-			{1.7, 67.5},
+			{1.25, 60},
+			{1.7, 65},
         };
     }
 
@@ -73,6 +73,12 @@ public final class Constants {
     public class VisionConstants {
         public static final String llName = "limelight-front";
 		public static final int updateFrequency = 5; // once every x periodic loops
+
+		public static final int[] trenchTagsRed = {1, 6, 7, 12};
+		public static final int[] trenchTagsBlue = {17, 22, 23, 28};
+
+		public static final int[] hubTagsRed = {5, 8, 9, 10, 11, 2};
+		public static final int[] hubTagsBlue = {21, 24, 25, 26, 27, 18};
     }
 
 	public class SwerveConstants {

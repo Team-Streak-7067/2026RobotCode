@@ -20,7 +20,6 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
@@ -33,11 +32,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.TSLib.leds.LedStrip;
+import frc.TSLib.leds.LedStrip.LedStatus;
+import frc.TSLib.leds.SetLedState;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.auto.ShootAuto;
+import frc.robot.commands.compound.AlignToTag;
 import frc.robot.commands.compound.Shoot;
 import frc.robot.commands.compound.StopShooting;
 import frc.robot.commands.conveyor.StopConveyor;
@@ -85,11 +89,12 @@ public class RobotContainer {
     public static final Intake intake = Intake.getInstance();
     public static final Conveyor conveyor = Conveyor.getInstance();
     public static final Shooter shooter = Shooter.getInstance();
+	public static final LedStrip leds = new LedStrip(0, 9);
 
 	// BINDS for buttons
 	final Trigger zeroHeadingButton = joystick.leftBumper().and(joystick.rightBumper());
 	final Trigger slowButton = joystick.leftTrigger();
-	final Trigger alignButton = joystick.b();
+	final Trigger alignButton = joystick.a();
 	final Trigger shootButton = joystick.rightTrigger();
 	final Trigger intakeDownButton = joystick.povDown();
 	final Trigger intakeUpButton = joystick.povUp();
@@ -99,7 +104,30 @@ public class RobotContainer {
 
 	final Trigger inAllianceZone = new Trigger(()->FieldConstants.getScoringZone().contains(getRobotPose().getTranslation()));
 	final Trigger inNeutralZone = new Trigger(()->FieldConstants.neutralZone.contains(getRobotPose().getTranslation()));
-	final Trigger trenchActivator = new Trigger(limelight.get)
+	final Trigger trenchActivator = new Trigger(
+		()->{
+			int tid = limelight.getTID();
+			int[] tags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.trenchTagsBlue : VisionConstants.trenchTagsRed;
+
+			for (int id: tags) {
+				if (tid == id) return true;
+			}
+
+			return false;
+		}
+	);
+	final Trigger hubActivator = new Trigger(
+		()->{
+			int tid = limelight.getTID();
+			int[] tags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.hubTagsBlue : VisionConstants.hubTagsRed;
+
+			for (int id: tags) {
+				if (tid == id) return true;
+			}
+			
+			return false;
+		}
+	);
 
 	public RobotContainer() {
 		configureBindings();
@@ -174,24 +202,34 @@ public class RobotContainer {
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * slowMult) // Drive forward with negative Y (forward)
                     .withVelocityY(-joystick.getLeftX() * MaxSpeed * slowMult) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * slowMult) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * slowMult * 2) // Drive counterclockwise with negative X (left)
             )
         );
 
+		alignButton.onFalse(new SetLedState(LedStatus.Off));
+		
         alignButton.whileTrue(
 			drivetrain.applyRequest(()->face
 				.withTargetDirection(getDirectionToHub())
                 .withMaxAbsRotationalRate(MaxAngularRate / 1.5)
 				.withVelocityX(-joystick.getLeftY() * MaxSpeed * slowMult) // Drive forward with negative Y (forward)
                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * slowMult) // Drive left with negative X (left)
-			)
+			).alongWith(new SetLedState(LedStatus.Ready))
 		);
 
-		//  TODO
-
+		trenchActivator.debounce(.15)
+		.and(alignButton.negate())
+			.onTrue(new SetLedState(LedStatus.Target))
+			.onFalse(new SetLedState(LedStatus.Off));
+		
+		// align to trench TODO continue
 		//alignbutton && trenchActivator .whileTrue(align to trench -> leds)
+		alignButton.and(trenchActivator).whileTrue(
+			new AlignToTag().andThen(new SetLedState(LedStatus.Ready))
+		);
+		
 		//alignbutton && allianceZone && !trenchActivator .whileTrue(align to hub -> leds -> confirm -> shoot)
-		//alignbutton && neutralZone && !trenchActivator .whileTrue(align to nearest opening to alliance zone -> confirm -> delivery) 
+		//alignbutton && neutralZone && !trenchActivator .whileTrue(align to nearest openi	ng to alliance zone -> confirm -> delivery) 
 
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
@@ -212,8 +250,8 @@ public class RobotContainer {
 
         intakeButton.onTrue(new Pull()).onFalse(new StopIntake());
 
-        intakeUpButton.onTrue(new UpdateSetpoint(IntakeConstants.openPos));
-        intakeDownButton.onTrue(new UpdateSetpoint(IntakeConstants.resetPos));
+        intakeUpButton.onTrue(new UpdateSetpoint(IntakeConstants.resetPos));
+        intakeDownButton.onTrue(new UpdateSetpoint(IntakeConstants.openPos));
 
         shootButton.onTrue(new Shoot()).onFalse(new StopShooting());
 

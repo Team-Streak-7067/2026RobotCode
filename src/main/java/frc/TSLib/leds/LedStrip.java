@@ -2,6 +2,7 @@ package frc.TSLib.leds;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -26,20 +27,33 @@ public class LedStrip extends SubsystemBase {
 
 	@Override
 	public void periodic() {
+		if (counter != 0) return;
+
 		switch (status) {
+			case Off:
+				setColor(Color.kBlack);
+				counter++;
+				break;
 			case Idle:
-				if (counter == 0) {
-					setGradient(Color.kRed, Color.kOrange);
-					counter++;
-				}
+				setGradient(Color.kRed, Color.kOrange);
+				counter++;
 				break;
 			case Waiting:
-				if (counter == 0) {
-					setColor(Color.kAquamarine);
-					counter++;
-				}
+				setColor(Color.kAquamarine);
+				counter++;
+				break;
+			case Target:
+				setColor(Color.kPink);
+				counter++;
+				break;
+			case Ready:
+				setColor(Color.kGreen);
+				counter++;
 				break;
 		}
+
+		// TODO remove later
+		SmartDashboard.putString("ledState", status + "" + counter);
 	}
 
 	public void setColor(Color color) {
@@ -60,13 +74,13 @@ public class LedStrip extends SubsystemBase {
 		led.start();
 	}
 
-	public void off() {
+	void off() {
 		led.stop();
 	}
 
 	public void setStatus(LedStatus status) {
-		this.status = status;
 		on();
+		this.status = status;
 		counter = 0;
 	}
 
@@ -75,7 +89,10 @@ public class LedStrip extends SubsystemBase {
 	}
 
 	public enum LedStatus {
+		Off,
 		Idle,
-		Waiting
+		Waiting,
+		Target,
+		Ready
 	}
 }

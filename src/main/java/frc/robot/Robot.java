@@ -12,12 +12,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.TSLib.leds.LedStrip;
+import frc.TSLib.leds.LedStrip.LedStatus;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
-    LedStrip leds = new LedStrip(0, 9);
-	Field2d field = new Field2d();
+    final LedStrip leds = RobotContainer.leds; 
+	final Field2d field = new Field2d();
 	
 	public static final RobotContainer m_robotContainer = new RobotContainer();
 	static final CommandSwerveDrivetrain drivetrain = RobotContainer.drivetrain;
@@ -36,13 +37,17 @@ public class Robot extends TimedRobot {
 	}
 	
 	@Override
-	public void disabledInit() {}
+	public void disabledInit() {
+		leds.setStatus(LedStatus.Idle);
+	}
 	
 	@Override
 	public void disabledPeriodic() {}
 	
 	@Override
-	public void disabledExit() {}
+	public void disabledExit() {
+		leds.setStatus(LedStatus.Off);
+	}
 	
 	@Override
 	public void autonomousInit() {
