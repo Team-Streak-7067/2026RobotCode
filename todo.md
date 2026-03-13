@@ -4,7 +4,6 @@ shooting on the move (teleop/auto)| ##
 *pressing align in neutral zone aims for delivery* | *##*
 *assisted trench crossing by aligning to apriltag* | *###*
 mirror autos | ##
-new auto path (neutral -> shoot x2) | ###
 
   **FIX**  | **PRIORITY**
 -----------|-------------
@@ -27,3 +26,4 @@ new auto path (neutral -> shoot x2) | ###
 - when trench is targeted, pressing aligns robot in front of trench april tag
 - when pressing align in alliance zone, robot points to hub, waits for driver confirmation, then shoots
 - shooter idles when in alliance zone and no shooter command is active
+- new improved auto path

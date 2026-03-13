@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "line 3m"
+            "pathName": "cycleim-v2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "test",
+  "folder": null,
   "choreoAuto": false
 }

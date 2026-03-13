@@ -4,11 +4,14 @@
   "holonomicMode": true,
   "pathFolders": [
     "cycle",
+    "cycleim",
     "line 3m",
     "line 3m rot",
     "shoot"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "test"
+  ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
