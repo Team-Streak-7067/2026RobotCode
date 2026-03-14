@@ -6,7 +6,6 @@ package frc.robot.commands.compound;
 
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentricFacingAngle;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,7 +22,7 @@ public class AlignToTag extends Command {
 	RobotCentricFacingAngle rot = new RobotCentricFacingAngle()
 	.withHeadingPID(SwerveConstants.rotateKp, SwerveConstants.rotateKi, SwerveConstants.rotateKd);
 
-	PIDController yCtrl = new PIDController(10, 0, 0);
+	// PIDController ctrl = new PIDController(10, 0, 0);
 	
 	public AlignToTag() {
 		addRequirements(drivetrain, limelight);

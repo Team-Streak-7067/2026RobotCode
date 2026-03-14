@@ -103,7 +103,8 @@ public class RobotContainer {
 	// driver binds
 	final Trigger zeroHeadingButton = driver.leftBumper().and(driver.rightBumper());
 	final Trigger slowButton = driver.leftTrigger();
-	final Trigger alignButton = driver.a();
+	final Trigger alignHubButton = driver.a();
+	final Trigger alignTrenchButton = driver.b();
 	final Trigger confirmButton = driver.rightTrigger();
 	final Trigger reverseButton = driver.povLeft();
 	final Trigger intakeMacroButton = driver.rightBumper().and(zeroHeadingButton.negate());
@@ -112,6 +113,8 @@ public class RobotContainer {
 	final Trigger shootButton = operator.rightTrigger();
 	final Trigger intakeDownButton = operator.povDown();
 	final Trigger intakeUpButton = operator.povUp();
+	final Trigger pullButton = operator.rightBumper();
+	final Trigger pushButton = operator.leftBumper();
 
 	// field triggers
 	final Trigger inAllianceZone = new Trigger(()->FieldConstants.getScoringZone().contains(getRobotPose().getTranslation()));
@@ -187,6 +190,9 @@ public class RobotContainer {
 		Translation2d robot = getRobotPose().getTranslation();
 
 		Rotation2d angle = hub.minus(robot).getAngle();
+		if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+			angle = angle.rotateBy(Rotation2d.k180deg);
+		}
 
 		return angle;
 	}
@@ -212,7 +218,7 @@ public class RobotContainer {
         );
 
 		// DRIVER
-		alignButton.onFalse(new SetLedState(LedStatus.Off));
+		alignHubButton.onFalse(new SetLedState(LedStatus.Off));
 		confirmButton.onTrue(new Shoot()).onFalse(new StopShooting());
 		// inAllianceZone.and(()->shooter.getCurrentCommand() == null).whileTrue(new Idle());
 		// inAllianceZone.onFalse(new StopShooter());
@@ -221,20 +227,20 @@ public class RobotContainer {
 		
 		// trench detection leds
 		trenchActivator.debounce(.15)
-		.and(alignButton.negate())
+		.and(alignTrenchButton.or(alignHubButton).negate())
 			.onTrue(new SetLedState(LedStatus.Target))
 			.onFalse(new SetLedState(LedStatus.Off));
 		
 		// align to trench
-		//alignbutton && trenchActivator .whileTrue(align to trench -> leds)
-		// alignButton.and(trenchActivator)
-		// .whileTrue(
-		// 	new AlignToTag().andThen(new SetLedState(LedStatus.Ready))
-		// );
+		// alignbutton && trenchActivator .whileTrue(align to trench -> leds)
+		alignTrenchButton.and(trenchActivator).and(alignHubButton.negate())
+		.whileTrue(
+			new AlignToTag().andThen(new SetLedState(LedStatus.Ready))
+		);
 			
 		// align to hub
 		//alignbutton && allianceZone && !trenchActivator .whileTrue(align to hub -> leds)
-		alignButton.and(inAllianceZone).and(trenchActivator.negate())
+		alignHubButton.and(inAllianceZone).and(alignTrenchButton.negate())
 		.whileTrue(new ParallelDeadlineGroup(
 				new WaitUntilCommand(hubActivator).andThen(new WaitCommand(VisionConstants.tagDetectToAlignDelay)),
 				drivetrain.applyRequest(()->face
@@ -272,6 +278,9 @@ public class RobotContainer {
         shootButton.onTrue(new Shoot()).onFalse(new StopShooting());
         intakeUpButton.onTrue(new UpdateSetpoint(IntakeConstants.resetPos));
         intakeDownButton.onTrue(new UpdateSetpoint(IntakeConstants.openPos));
+
+		pullButton.onTrue(new Pull()).onFalse(new StopIntake());
+		pushButton.onTrue(Commands.runOnce(intake::push)).onFalse(new StopIntake());
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

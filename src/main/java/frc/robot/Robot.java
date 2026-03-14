@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.TSLib.leds.LedStrip;
 import frc.TSLib.leds.LedStrip.LedStatus;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class Robot extends TimedRobot {
@@ -26,6 +29,10 @@ public class Robot extends TimedRobot {
 	
 	public Robot() {
 		SmartDashboard.putData(field);
+		var x = FieldConstants.getHubPos();
+		Pose2d hubPos = new Pose2d(x.getX(), x.getY(), Rotation2d.kZero);
+
+		field.getObject("hub").setPose(hubPos);
 	}
 
 	@Override

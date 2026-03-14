@@ -31,6 +31,7 @@ public final class Constants {
         public static final double gearRatio = 1/100;
 
 		public static final Angle angleForwardSoftLimit = Rotations.of(-1);
+
 		public static final Angle angleReverseSoftLimit = Rotations.of(-113.15);
 		
 		public static final double angleGearRatio = 1;
@@ -65,6 +66,8 @@ public final class Constants {
         public static final double[][] speedMapData = {
 			{1.25, 60},
 			{1.7, 65},
+			{2.3, 75},
+			{2.8, 85}
         };
     }
 

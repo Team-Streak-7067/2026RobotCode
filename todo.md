@@ -3,15 +3,13 @@
 shooting on the move (teleop/auto)| ##
 *pressing align in neutral zone aims for delivery* | *##*
 *assisted trench crossing by aligning to apriltag* | *###*
+reverse conveyor and intake commands | ##
 mirror autos | ##
 
   **FIX**  | **PRIORITY**
 -----------|-------------
-when aligned to hub if see trench tag stops in place | ###
-seperate hub align and trench align binds | ##
 
 ### to test
-- trench targeting distance
 - ~~trench align~~
 
 ### changelog
