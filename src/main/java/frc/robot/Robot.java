@@ -19,6 +19,7 @@ public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
     final LedStrip leds = RobotContainer.leds; 
 	final Field2d field = new Field2d();
+	CommandScheduler scheduler = CommandScheduler.getInstance();
 	
 	public static final RobotContainer m_robotContainer = new RobotContainer();
 	static final CommandSwerveDrivetrain drivetrain = RobotContainer.drivetrain;
@@ -29,7 +30,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void robotPeriodic() {
-		CommandScheduler.getInstance().run();
+		scheduler.run();
 		field.setRobotPose(drivetrain.getState().Pose);
 
 		// FIXME remove later

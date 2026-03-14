@@ -15,7 +15,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -30,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -54,7 +54,6 @@ import frc.robot.commands.intake.StopIntake;
 import frc.robot.commands.intake.UpdateSetpoint;
 import frc.robot.commands.shooter.Idle;
 import frc.robot.commands.shooter.SpinUp;
-import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -88,6 +87,9 @@ public class RobotContainer {
 
     double slowMult = 1;
 
+	int[] trenchTags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.trenchTagsBlue : VisionConstants.trenchTagsRed;
+	int[] hubTags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.hubTagsBlue : VisionConstants.hubTagsRed; 
+
     final CommandXboxController driver = new CommandXboxController(0);
 	final CommandXboxController operator = new CommandXboxController(1);
 
@@ -117,24 +119,18 @@ public class RobotContainer {
 	final Trigger trenchActivator = new Trigger(
 		()->{
 			int tid = limelight.getTID();
-			int[] tags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.trenchTagsBlue : VisionConstants.trenchTagsRed;
-
-			for (int id: tags) {
-				if (tid == id) return true;
+			for (int id: trenchTags) {
+				if (tid == id) return limelight.getDistanceToTag().lte(VisionConstants.TrenchAlignDistanceThreshold);
 			}
-
-			return limelight.getDistanceToTag().lte(VisionConstants.TrenchAlignDistanceThreshold);
+			return false;
 		}
 	);
 	final Trigger hubActivator = new Trigger(
 		()->{
 			int tid = limelight.getTID();
-			int[] tags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.hubTagsBlue : VisionConstants.hubTagsRed;
-
-			for (int id: tags) {
+			for (int id: hubTags) {
 				if (tid == id) return true;
 			}
-			
 			return false;
 		}
 	);
@@ -217,9 +213,11 @@ public class RobotContainer {
 
 		// DRIVER
 		alignButton.onFalse(new SetLedState(LedStatus.Off));
-		confirmButton.onFalse(new StopShooting());
-		inAllianceZone.and(()->shooter.getCurrentCommand() == null).whileTrue(new Idle());
-		inAllianceZone.onFalse(new StopShooter());
+		confirmButton.onTrue(new Shoot()).onFalse(new StopShooting());
+		// inAllianceZone.and(()->shooter.getCurrentCommand() == null).whileTrue(new Idle());
+		// inAllianceZone.onFalse(new StopShooter());
+
+		SmartDashboard.putBoolean("trenchActivator", trenchActivator.getAsBoolean());
 		
 		// trench detection leds
 		trenchActivator.debounce(.15)
@@ -229,26 +227,26 @@ public class RobotContainer {
 		
 		// align to trench
 		//alignbutton && trenchActivator .whileTrue(align to trench -> leds)
-		alignButton.and(trenchActivator)
-		.whileTrue(
-			new AlignToTag().andThen(new SetLedState(LedStatus.Ready))
-		);
+		// alignButton.and(trenchActivator)
+		// .whileTrue(
+		// 	new AlignToTag().andThen(new SetLedState(LedStatus.Ready))
+		// );
 			
-		// FIXME gut feeling says this logic is wrong but i cant put my finger on it, test and debug and discover mistakes
-		// align to hub and confirm to shoot
-		//alignbutton && allianceZone && !trenchActivator .whileTrue(align to hub -> leds -> confirm -> shoot)
+		// align to hub
+		//alignbutton && allianceZone && !trenchActivator .whileTrue(align to hub -> leds)
 		alignButton.and(inAllianceZone).and(trenchActivator.negate())
-		.whileTrue(
-			drivetrain.applyRequest(()->face
+		.whileTrue(new ParallelDeadlineGroup(
+				new WaitUntilCommand(hubActivator).andThen(new WaitCommand(VisionConstants.tagDetectToAlignDelay)),
+				drivetrain.applyRequest(()->face
 				.withTargetDirection(getDirectionToHub())
 				.withMaxAbsRotationalRate(MaxAngularRate / 1.5)
-				// TODO reenable when shooting on the fly
+				// reenable when shooting on the fly
 				// .withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
 				// .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
-			).alongWith(new SetLedState(LedStatus.Target)).alongWith(new SpinUp())
-			.withDeadline(new WaitUntilCommand(hubActivator).andThen(new WaitCommand(VisionConstants.tagDetectToAlignDelay)))
-			.andThen(new WaitUntilCommand(confirmButton).alongWith(new SetLedState(LedStatus.Waiting)))
-			.andThen(new Shoot().alongWith(new SetLedState(LedStatus.Ready)))
+				),
+				new SetLedState(LedStatus.Ready),
+				new SpinUp()
+			)
 		);
 		
 		//alignbutton && neutralZone && !trenchActivator .whileTrue(align to nearest opening to alliance zone -> confirm -> delivery) 
@@ -263,7 +261,7 @@ public class RobotContainer {
         slowButton.onChange(Commands.runOnce(()->updateSlow(slowButton.getAsBoolean())));
 
         intakeMacroButton
-		.onTrue(new Pull().alongWith(new UpdateSetpoint(IntakeConstants.openPos)))
+		.onTrue(new Pull().andThen(new UpdateSetpoint(IntakeConstants.openPos)))
 		.onFalse(new StopIntake());
 
         reverseButton

@@ -25,7 +25,7 @@ public final class Constants {
 
         public static final int limitSwitchID = 0;
 
-		public static final double intakeSpeed = .35;
+		public static final double intakeSpeed = .5;
 		public static final double angleSpeed = .5;
 
         public static final double gearRatio = 1/100;
@@ -76,7 +76,7 @@ public final class Constants {
     public class VisionConstants {
         public static final String llName = "limelight-front";
 
-		public static final Distance TrenchAlignDistanceThreshold = Meters.of(1.5);
+		public static final Distance TrenchAlignDistanceThreshold = Meters.of(1.75);
 		public static final Time tagDetectToAlignDelay = Seconds.of(1);
 
 		public static final int[] trenchTagsRed = {1, 6, 7, 12};

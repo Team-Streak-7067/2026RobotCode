@@ -39,6 +39,7 @@ public class Intake extends SubsystemBase {
 		configMotors();
 		resetPos();
 		initDashboard();
+		angleMotor.setPosition(0);
 	}
 	
 	@Override
