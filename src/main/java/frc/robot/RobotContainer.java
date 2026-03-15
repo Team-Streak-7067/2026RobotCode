@@ -19,6 +19,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -92,6 +93,8 @@ public class RobotContainer {
 
     final CommandXboxController driver = new CommandXboxController(0);
 	final CommandXboxController operator = new CommandXboxController(1);
+
+	final SlewRateLimiter driveLimiter = new SlewRateLimiter(0.2);
 
     public static final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
     public static final Vision limelight = Vision.getInstance();
@@ -209,10 +212,17 @@ public class RobotContainer {
     }
 	
 	private void configureBindings() {
+        // drivetrain.setDefaultCommand(
+        //     drivetrain.applyRequest(() ->
+        //         drive.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
+        //             .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
+        //             .withRotationalRate(-driver.getRightX() * MaxAngularRate * slowMult * 2)
+        //     )
+        // );
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
+                drive.withVelocityX(driveLimiter.calculate((-driver.getLeftY())) * MaxSpeed * slowMult)
+                    .withVelocityY(driveLimiter.calculate(-driver.getLeftX()) * MaxSpeed * slowMult)
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate * slowMult * 2)
             )
         );
@@ -250,9 +260,9 @@ public class RobotContainer {
 				// .withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
 				// .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
 				),
-				new SetLedState(LedStatus.Ready),
+				new SetLedState(LedStatus.Target),
 				new SpinUp()
-			)
+			).andThen(new SetLedState(LedStatus.Ready))
 		);
 		
 		//alignbutton && neutralZone && !trenchActivator .whileTrue(align to nearest opening to alliance zone -> confirm -> delivery) 

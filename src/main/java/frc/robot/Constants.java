@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
@@ -37,8 +38,8 @@ public final class Constants {
 		public static final double angleGearRatio = 1;
 		
 		public static final Slot0Configs angleS0C = new Slot0Configs()
-		.withKP(5).withKI(0).withKD(.2).withKG(0)
-		.withGravityType(GravityTypeValue.Arm_Cosine);
+		.withKP(5).withKI(0).withKD(.2).withKG(0)	
+		.withGravityType(GravityTypeValue.Arm_Cosine);	
 		
 		public static final Angle resetPos = Rotations.of(0);
 		public static final Angle openPos = Rotations.of(-113.12);
@@ -56,6 +57,9 @@ public final class Constants {
         public static final int leaderCANID = 5;
         public static final int followerCANID = 6;
 
+		public static final Angle shooterAngle = Degrees.of(75);
+		public static final Distance wheelRadius = Inches.of(2);
+		
         public static final double ratio = 18/24;
 
         public static final AngularVelocity idleSpeed = RotationsPerSecond.of(30);
@@ -81,6 +85,7 @@ public final class Constants {
 
 		public static final Distance TrenchAlignDistanceThreshold = Meters.of(1.75);
 		public static final Time tagDetectToAlignDelay = Seconds.of(1);
+		public static final double alignDeadband = 1.5; // allowed error in degrees for aligning by tx 
 
 		public static final int[] trenchTagsRed = {1, 6, 7, 12};
 		public static final int[] trenchTagsBlue = {17, 22, 23, 28};

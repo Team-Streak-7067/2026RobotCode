@@ -7,6 +7,9 @@ package frc.robot.commands.compound;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentricFacingAngle;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
@@ -22,20 +25,19 @@ public class AlignToTag extends Command {
 	RobotCentricFacingAngle rot = new RobotCentricFacingAngle()
 	.withHeadingPID(SwerveConstants.rotateKp, SwerveConstants.rotateKi, SwerveConstants.rotateKd);
 
-	// PIDController ctrl = new PIDController(10, 0, 0);
-	
+	TrapezoidProfile ctrl = new TrapezoidProfile(new Constraints(2, 4));
+	State endState;
+
 	public AlignToTag() {
 		addRequirements(drivetrain, limelight);
 	}
 	
 	@Override
 	public void initialize() {
-		double[] llArr = LimelightHelpers.getBotPose_TargetSpace(limelight.getCameraName());
-		// what i get out of limelight should be x,y, th of robot in target space
-		SmartDashboard.putNumberArray("llbotposetargetspace", llArr);
-		// pose = new Pose2d(llArr[0], llArr[1], new Rotation2d(llArr[2]));
-		// drivetrain.applyRequest(()->rot.withTargetDirection(pose.getRotation().unaryMinus()));
-		// TODO continue
+		var llpos = LimelightHelpers.getTargetPose_RobotSpace(limelight.getCameraName());
+		SmartDashboard.putNumberArray("alignToTag_targetpos_robotspace", llpos);
+		// Pose2d tagPose = new Pose2d(llpos[2], llpos[0], new Rotation2d(llpos[4]));
+		// endState = new State(0, 0);
 	}
 	
 	@Override
@@ -46,6 +48,6 @@ public class AlignToTag extends Command {
 	
 	@Override
 	public boolean isFinished() {
-		return Math.abs(limelight.getTX()) < 1;
+		return true;//Math.abs(limelight.getTX()) < VisionConstants.alignDeadband;
 	}
 }
