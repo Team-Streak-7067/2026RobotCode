@@ -68,10 +68,10 @@ public final class Constants {
         .withKP(.25).withKI(0).withKD(0).withKA(0).withKV(0);
 
         public static final double[][] speedMapData = {
-			{1.25, 60},
-			{1.7, 65},
-			{2.3, 75},
-			{2.8, 85}
+			{1.25, 55},
+			{1.7, 60},
+			{2.3, 70},
+			{2.8, 75}
         };
     }
 

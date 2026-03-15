@@ -55,6 +55,7 @@ import frc.robot.commands.intake.StopIntake;
 import frc.robot.commands.intake.UpdateSetpoint;
 import frc.robot.commands.shooter.Idle;
 import frc.robot.commands.shooter.SpinUp;
+import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -93,8 +94,6 @@ public class RobotContainer {
 
     final CommandXboxController driver = new CommandXboxController(0);
 	final CommandXboxController operator = new CommandXboxController(1);
-
-	final SlewRateLimiter driveLimiter = new SlewRateLimiter(0.2);
 
     public static final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
     public static final Vision limelight = Vision.getInstance();
@@ -212,23 +211,16 @@ public class RobotContainer {
     }
 	
 	private void configureBindings() {
-        // drivetrain.setDefaultCommand(
-        //     drivetrain.applyRequest(() ->
-        //         drive.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
-        //             .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
-        //             .withRotationalRate(-driver.getRightX() * MaxAngularRate * slowMult * 2)
-        //     )
-        // );
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(driveLimiter.calculate((-driver.getLeftY())) * MaxSpeed * slowMult)
-                    .withVelocityY(driveLimiter.calculate(-driver.getLeftX()) * MaxSpeed * slowMult)
+                drive.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate * slowMult * 2)
             )
         );
 
 		// DRIVER
-		alignHubButton.onFalse(new SetLedState(LedStatus.Off));
+		alignHubButton.onFalse(new SetLedState(LedStatus.Off).andThen(new StopShooter()));
 		confirmButton.onTrue(new Shoot()).onFalse(new StopShooting());
 		// inAllianceZone.and(()->shooter.getCurrentCommand() == null).whileTrue(new Idle());
 		// inAllianceZone.onFalse(new StopShooter());
