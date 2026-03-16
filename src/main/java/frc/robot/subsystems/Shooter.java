@@ -85,6 +85,7 @@ public class Shooter extends SubsystemBase {
 
 	public AngularVelocity calcSpeedBallistic(Distance dist) {
 		return RadiansPerSecond.of(
+			// TODO remove mult by 2 if speed is off
 			2 * ShooterConstants.wheelRadius.in(Meters) * dist.in(Meters)
 			* Math.tan(ShooterConstants.shooterAngle.in(Radians))
 		);
