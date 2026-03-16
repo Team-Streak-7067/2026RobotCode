@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -77,12 +79,21 @@ public class Shooter extends SubsystemBase {
 		leader.stopMotor();
 	}
 
-	AngularVelocity calcSpeed(Distance dist) {
+	public AngularVelocity calcSpeed(Distance dist) {
 		return RotationsPerSecond.of(speedMap.get(dist.in(Meters)));
 	}
 
+	public AngularVelocity calcSpeedBallistic(Distance dist) {
+		return RadiansPerSecond.of(
+			2 * ShooterConstants.wheelRadius.in(Meters) * dist.in(Meters)
+			* Math.tan(ShooterConstants.shooterAngle.in(Radians))
+		);
+	}
+
 	public void spinUp(Distance distance) {
-		updateSetpoint(calcSpeed(distance));
+		// updateSetpoint(calcSpeed(distance));
+		// TODO test and remove worst performer
+		updateSetpoint(calcSpeedBallistic(distance));
 	}
 
 	public ShooterState getState() {

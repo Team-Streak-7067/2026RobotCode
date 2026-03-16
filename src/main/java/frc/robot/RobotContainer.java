@@ -19,10 +19,10 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -88,6 +88,8 @@ public class RobotContainer {
 	RobotConfig robotConfig;
 
     double slowMult = 1;
+
+	Translation2d shotData;
 
 	int[] trenchTags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.trenchTagsBlue : VisionConstants.trenchTagsRed;
 	int[] hubTags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.hubTagsBlue : VisionConstants.hubTagsRed; 
@@ -199,6 +201,19 @@ public class RobotContainer {
 		return angle;
 	}
 
+	Translation2d getShotData() {
+		Translation2d hub_robot = FieldConstants.getHubPos().minus(getRobotPose().getTranslation());
+		// Distance dist = Meters.of(hub_robot.getNorm());
+		// AngularVelocity ballspeed = shooter.calcSpeedBallistic(dist);
+		// why is this here?
+
+		ChassisSpeeds robotSpeedsFieldRelative = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
+		Translation2d robotVelocity = new Translation2d(robotSpeedsFieldRelative.vxMetersPerSecond, robotSpeedsFieldRelative.vyMetersPerSecond);
+
+		Translation2d shot = hub_robot.minus(robotVelocity);
+		return shot;
+	}
+
     public Distance getDistanceToHub() {
         Translation2d hub = FieldConstants.getHubPos();
         Translation2d robot = getRobotPose().getTranslation();
@@ -222,6 +237,7 @@ public class RobotContainer {
 		// DRIVER
 		alignHubButton.onFalse(new SetLedState(LedStatus.Off).andThen(new StopShooter()));
 		confirmButton.onTrue(new Shoot()).onFalse(new StopShooting());
+		inAllianceZone.whileTrue(Commands.runOnce(()->{shotData = getShotData();}));
 		// inAllianceZone.and(()->shooter.getCurrentCommand() == null).whileTrue(new Idle());
 		// inAllianceZone.onFalse(new StopShooter());
 
@@ -246,14 +262,13 @@ public class RobotContainer {
 		.whileTrue(new ParallelDeadlineGroup(
 				new WaitUntilCommand(hubActivator).andThen(new WaitCommand(VisionConstants.tagDetectToAlignDelay)),
 				drivetrain.applyRequest(()->face
-				.withTargetDirection(getDirectionToHub())
-				.withMaxAbsRotationalRate(MaxAngularRate / 1.5)
-				// reenable when shooting on the fly
-				// .withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
-				// .withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
+					.withTargetDirection(shotData.getAngle())
+					.withMaxAbsRotationalRate(MaxAngularRate / 1.5)
+					.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
+					.withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
 				),
 				new SetLedState(LedStatus.Target),
-				new SpinUp()
+				new SpinUp(shotData.getNorm())
 			).andThen(new SetLedState(LedStatus.Ready))
 		);
 		

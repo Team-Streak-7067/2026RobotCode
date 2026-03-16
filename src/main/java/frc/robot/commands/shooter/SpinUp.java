@@ -4,6 +4,8 @@
 
 package frc.robot.commands.shooter;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
@@ -16,11 +18,20 @@ public class SpinUp extends InstantCommand {
 	
 	public SpinUp() {
 		addRequirements(shooter);
+		dist = Robot.m_robotContainer.getDistanceToHub();
+	}
+
+	public SpinUp(Distance dist) {
+		this.dist = dist;
+	}
+
+	public SpinUp(double dist) {
+		this.dist = Meters.of(dist);
 	}
 	
 	@Override
 	public void initialize() {
-		shooter.spinUp(Robot.m_robotContainer.getDistanceToHub());
+		shooter.spinUp(dist);
 		shooter.setState(ShooterState.Shooting);
 	}
 }
