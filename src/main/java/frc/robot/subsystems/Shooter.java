@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -80,21 +79,35 @@ public class Shooter extends SubsystemBase {
 	}
 
 	public AngularVelocity calcSpeed(Distance dist) {
+		// TODO test and remove worst performer
+		// return calcSpeedLUT(dist);
+		return calcSpeedBallistic(dist);
+		// return calcSpeedRegression(dist);
+	}
+
+	AngularVelocity calcSpeedLUT(Distance dist) {
 		return RotationsPerSecond.of(speedMap.get(dist.in(Meters)));
 	}
 
-	public AngularVelocity calcSpeedBallistic(Distance dist) {
+	AngularVelocity calcSpeedRegression(Distance dist) {
+		double x = dist.in(Meters);
+		return RotationsPerSecond.of(-106.07954/(1+Math.pow(Math.E, -(0.54042*x - 0.617275))));
+	}
+
+	AngularVelocity calcSpeedBallistic(Distance dist) {
+		// return RadiansPerSecond.of(
+		// 	// TODO remove mult by 2 if speed is off
+		// 	2 * ShooterConstants.wheelRadius.in(Meters) * dist.in(Meters)
+		// 	* Math.tan(ShooterConstants.shooterAngle.in(Radians))
+		// );
+
 		return RadiansPerSecond.of(
-			// TODO remove mult by 2 if speed is off
-			2 * ShooterConstants.wheelRadius.in(Meters) * dist.in(Meters)
-			* Math.tan(ShooterConstants.shooterAngle.in(Radians))
+			8 * dist.in(Meters) / ShooterConstants.wheelRadius.in(Meters)
 		);
 	}
 
 	public void spinUp(Distance distance) {
-		// updateSetpoint(calcSpeed(distance));
-		// TODO test and remove worst performer
-		updateSetpoint(calcSpeedBallistic(distance));
+		updateSetpoint(calcSpeed(distance));
 	}
 
 	public ShooterState getState() {

@@ -6,8 +6,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static java.lang.Math.cos;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -43,6 +45,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LedConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.auto.ShootAuto;
@@ -202,15 +205,20 @@ public class RobotContainer {
 	}
 
 	Translation2d getShotData() {
-		Translation2d hub_robot = FieldConstants.getHubPos().minus(getRobotPose().getTranslation());
-		// Distance dist = Meters.of(hub_robot.getNorm());
-		// AngularVelocity ballspeed = shooter.calcSpeedBallistic(dist);
-		// why is this here?
+		Translation2d target = FieldConstants.getHubPos().minus(getRobotPose().getTranslation());
 
 		ChassisSpeeds robotSpeedsFieldRelative = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
 		Translation2d robotVelocity = new Translation2d(robotSpeedsFieldRelative.vxMetersPerSecond, robotSpeedsFieldRelative.vyMetersPerSecond);
 
-		Translation2d shot = hub_robot.minus(robotVelocity);
+		// TODO maybe uncomment this??
+		// Distance dist = Meters.of(target.getNorm());
+		// double idealSpeed = shooter.calcSpeed(dist).in(RotationsPerSecond) * cos(ShooterConstants.shooterAngle.in(Radians)); //ball vx
+
+		// target = target.div(dist.in(Meters)).times(idealSpeed);
+		// i am lost
+		target = target.times(cos(ShooterConstants.shooterAngle.in(Radians)));
+
+		Translation2d shot = target.minus(robotVelocity);
 		return shot;
 	}
 
