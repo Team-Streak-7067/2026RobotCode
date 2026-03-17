@@ -8,6 +8,7 @@ mirror autos | ##
 
   **FIX**  | **PRIORITY**
 -----------|-------------
+rewrite shooter spinup command to take in robot velocity and account for it | ###
 
 ### to test
 new shooter speeds (ballistics, regression)

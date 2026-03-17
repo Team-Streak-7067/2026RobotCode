@@ -6,10 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static java.lang.Math.cos;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -45,7 +43,6 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LedConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.auto.ShootAuto;
@@ -215,8 +212,12 @@ public class RobotContainer {
 		// double idealSpeed = shooter.calcSpeed(dist).in(RotationsPerSecond) * cos(ShooterConstants.shooterAngle.in(Radians)); //ball vx
 
 		// target = target.div(dist.in(Meters)).times(idealSpeed);
+
 		// i am lost
-		target = target.times(cos(ShooterConstants.shooterAngle.in(Radians)));
+		// maybe we dont need cos because we want the final vector norm to be the distance?
+		// but somewhere we have to project the ball velocity vector into x & y to not overshoot
+		// TODO when this works rewrite this
+		// target = target.times(cos(ShooterConstants.shooterAngle.in(Radians)));
 
 		Translation2d shot = target.minus(robotVelocity);
 		return shot;
