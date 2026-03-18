@@ -6,8 +6,11 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static java.lang.Math.cos;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -31,6 +34,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -43,6 +47,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LedConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.auto.ShootAuto;
@@ -89,7 +94,7 @@ public class RobotContainer {
 
     double slowMult = 1;
 
-	Translation2d shotData;
+	Translation2d shotData = getShotData();
 
 	int[] trenchTags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.trenchTagsBlue : VisionConstants.trenchTagsRed;
 	int[] hubTags = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? VisionConstants.hubTagsBlue : VisionConstants.hubTagsRed; 
@@ -208,10 +213,10 @@ public class RobotContainer {
 		Translation2d robotVelocity = new Translation2d(robotSpeedsFieldRelative.vxMetersPerSecond, robotSpeedsFieldRelative.vyMetersPerSecond);
 
 		// TODO maybe uncomment this??
-		// Distance dist = Meters.of(target.getNorm());
-		// double idealSpeed = shooter.calcSpeed(dist).in(RotationsPerSecond) * cos(ShooterConstants.shooterAngle.in(Radians)); //ball vx
+		Distance dist = Meters.of(target.getNorm());
+		double idealSpeed = shooter.calcSpeed(dist).in(RPM) * cos(ShooterConstants.shooterAngle.in(Radians)); //ball vx
 
-		// target = target.div(dist.in(Meters)).times(idealSpeed);
+		target = target.div(dist.in(Meters)).times(idealSpeed);
 
 		// i am lost
 		// maybe we dont need cos because we want the final vector norm to be the distance?
@@ -271,13 +276,15 @@ public class RobotContainer {
 		.whileTrue(new ParallelDeadlineGroup(
 				new WaitUntilCommand(hubActivator).andThen(new WaitCommand(VisionConstants.tagDetectToAlignDelay)),
 				drivetrain.applyRequest(()->face
-					.withTargetDirection(shotData.getAngle())
+					// .withTargetDirection(shotData.getAngle())
+					.withTargetDirection(getDirectionToHub())
 					.withMaxAbsRotationalRate(MaxAngularRate / 1.5)
 					.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
 					.withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
 				),
 				new SetLedState(LedStatus.Target),
-				new SpinUp(shotData.getNorm())
+				// new SpinUp(shotData.getNorm())
+				new SpinUp(getDistanceToHub())
 			).andThen(new SetLedState(LedStatus.Ready))
 		);
 		

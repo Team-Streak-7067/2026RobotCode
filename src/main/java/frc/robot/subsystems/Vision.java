@@ -34,7 +34,7 @@ public class Vision extends SubsystemBase {
 
 	Vision(String name) {
 		this.name = name;
-		LimelightHelpers.setCropWindow(name, -1, 1, -0.7, 0.7);
+		LimelightHelpers.setCropWindow(name, -1, 1, -0.7, 1);
 	}
 	
 	@Override

@@ -65,7 +65,7 @@ public final class Constants {
         public static final AngularVelocity idleSpeed = RotationsPerSecond.of(30);
 
         public static final Slot0Configs S0C = new Slot0Configs()
-        .withKP(.25).withKI(0).withKD(0).withKA(0).withKV(0);
+        .withKP(.25).withKI(0).withKD(0).withKA(0).withKV(.01);
 
         public static final double[][] speedMapData = {
 			{1.25, 55},
@@ -84,7 +84,7 @@ public final class Constants {
         public static final String llName = "limelight-front";
 
 		public static final Distance TrenchAlignDistanceThreshold = Meters.of(1.75);
-		public static final Time tagDetectToAlignDelay = Seconds.of(1);
+		public static final Time tagDetectToAlignDelay = Seconds.of(.1);
 		public static final double alignDeadband = 1.5; // allowed error in degrees for aligning by tx 
 
 		public static final int[] trenchTagsRed = {1, 6, 7, 12};

@@ -81,8 +81,8 @@ public class Shooter extends SubsystemBase {
 	public AngularVelocity calcSpeed(Distance dist) {
 		// TODO test and remove worst performer
 		// return calcSpeedLUT(dist);
-		return calcSpeedBallistic(dist);
-		// return calcSpeedRegression(dist);
+		// return calcSpeedBallistic(dist);
+		return calcSpeedRegression(dist);
 	}
 
 	AngularVelocity calcSpeedLUT(Distance dist) {
@@ -91,7 +91,7 @@ public class Shooter extends SubsystemBase {
 
 	AngularVelocity calcSpeedRegression(Distance dist) {
 		double x = dist.in(Meters);
-		return RotationsPerSecond.of(-106.07954/(1+Math.pow(Math.E, -(0.54042*x - 0.617275))));
+		return RotationsPerSecond.of(106.07954/(1+Math.pow(Math.E, -(0.54042*x - 0.617275))));
 	}
 
 	AngularVelocity calcSpeedBallistic(Distance dist) {
