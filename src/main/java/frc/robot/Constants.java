@@ -86,12 +86,6 @@ public final class Constants {
 		public static final Distance TrenchAlignDistanceThreshold = Meters.of(1.75);
 		public static final Time tagDetectToAlignDelay = Seconds.of(.1);
 		public static final double alignDeadband = 1.5; // allowed error in degrees for aligning by tx 
-
-		public static final int[] trenchTagsRed = {1, 6, 7, 12};
-		public static final int[] trenchTagsBlue = {17, 22, 23, 28};
-
-		public static final int[] hubTagsRed = {5, 8, 9, 10, 11, 2};
-		public static final int[] hubTagsBlue = {21, 24, 25, 26, 27, 18};
     }
 
 	public class SwerveConstants {
@@ -123,15 +117,28 @@ public final class Constants {
 		public static final Distance allianceZoneWidth = Inches.of(156.61);
 		public static final Distance allianceZoneHeight = fieldHeight;
 		
-		public static final Distance hubX = Inches.of(182.11);
-		public static final Distance hubY = fieldHeight.div(2);
-		
 		public static final Distance neutralZoneWidth = Inches.of(240);
 		public static final Distance neutralZoneHeight = fieldHeight;
+		
+		public static final Distance hubX = Inches.of(182.11);
+		public static final Distance hubY = fieldHeight.div(2);
+
+		public static final Distance deliveryPointX = allianceZoneWidth.div(2);
+		public static final Distance deliveryPointY = Inches.of(12);
 		
 		public static final Translation2d hubPosBlue = new Translation2d(hubX, hubY);
 		public static final Translation2d hubPosRed = new Translation2d(fieldWidth.minus(hubX), hubY);
 
+		public static final Translation2d deliveryPointBlueLower = new Translation2d(deliveryPointX, deliveryPointY);
+		public static final Translation2d deliveryPointBlueUpper = new Translation2d(deliveryPointX, fieldHeight.minus(deliveryPointY));
+		public static final Translation2d deliveryPointRedLower = new Translation2d(fieldWidth.minus(deliveryPointX), deliveryPointY);
+		public static final Translation2d deliveryPointRedUpper = new Translation2d(fieldWidth.minus(deliveryPointX), fieldHeight.minus(deliveryPointY));
+
+		public static final int[] trenchTagsRed = {1, 6, 7, 12};
+		public static final int[] trenchTagsBlue = {17, 22, 23, 28};
+
+		public static final int[] hubTagsRed = {5, 8, 9, 10, 11, 2};
+		public static final int[] hubTagsBlue = {21, 24, 25, 26, 27, 18};
 		
 		public static final Rectangle2d field = new Rectangle2d(
 			Translation2d.kZero,
@@ -153,14 +160,32 @@ public final class Constants {
 			new Translation2d(fieldWidth.div(2).plus(neutralZoneWidth.div(2)), zero)
 		);
 
+		static boolean isBlue() {
+			return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
+		}
 		
 		public static final Translation2d getHubPos() {
-			return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? hubPosBlue : hubPosRed;
+			return isBlue() ? hubPosBlue : hubPosRed;
 		}
 
 		public static final Rectangle2d getScoringZone() {
-			return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? scoringZoneBlue : scoringZoneRed;
+			return isBlue() ? scoringZoneBlue : scoringZoneRed;
 		}
 
+		public static final int[] getTrenchTags() {
+			return isBlue() ? trenchTagsBlue : trenchTagsRed;
+		}
+
+		public static final int[] getHubTags() {
+			return isBlue() ? hubTagsBlue : hubTagsRed; 
+		}
+
+		public static final Translation2d getLowerDeliveryPoint() {
+			return isBlue() ? deliveryPointBlueLower : deliveryPointRedLower;
+		}
+
+		public static final Translation2d getUpperDeliveryPoint() {
+			return isBlue() ? deliveryPointBlueUpper : deliveryPointRedUpper;
+		}
 	}
 }

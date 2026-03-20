@@ -38,6 +38,7 @@ public class AlignToTag extends Command {
 		SmartDashboard.putNumberArray("alignToTag_targetpos_robotspace", llpos);
 		// Pose2d tagPose = new Pose2d(llpos[2], llpos[0], new Rotation2d(llpos[4]));
 		// endState = new State(0, 0);
+		// TODO CONTINUE
 	}
 	
 	@Override

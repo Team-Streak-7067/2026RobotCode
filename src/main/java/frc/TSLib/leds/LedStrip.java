@@ -48,7 +48,6 @@ public class LedStrip extends SubsystemBase {
 		}
 		counter++;
 
-		// TODO remove later
 		SmartDashboard.putString("ledState", status + "" + counter);
 	}
 

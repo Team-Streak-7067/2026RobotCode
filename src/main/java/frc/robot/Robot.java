@@ -33,8 +33,7 @@ public class Robot extends TimedRobot {
 		scheduler.run();
 		field.setRobotPose(drivetrain.getState().Pose);
 
-		// FIXME remove later
-		SmartDashboard.putNumber("dist to hub", m_robotContainer.getDistanceToHub().in(Meters));
+		SmartDashboard.putNumber("dist to goal", RobotContainer.getShotNorm().in(Meters));
 	}
 	
 	@Override
