@@ -3,7 +3,6 @@
 	* in progress
 
 ### TODO
-!!!	*pressing align in neutral zone aims for delivery
 !!	*assisted trench crossing by aligned to april tag
 !	mirror autos (or redo them)
 
@@ -12,3 +11,4 @@
 ### TO TEST
 	shooting on the fly
 	shooting and delivery both alliances
+	delivery (both alliances)
