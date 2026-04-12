@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -271,9 +272,9 @@ public class RobotContainer {
 		alignButton.and(inNeutralZone).and(trenchAlignMacro.negate())
 		.whileTrue(
 			new ParallelCommandGroup(
-				new SpinUp(getShotNorm()),
+				// new SpinUp(getShotNorm()),
 				// uncomment if using eeshwark shot vector
-				// new SpinUp(RPM.of(shotVector.getNorm())),
+				new SpinUp(RPM.of(shotVector.getNorm())),
 				drivetrain.applyRequest(()->face
 					// TODO if doesnt work for both alliances remove rotation
 					.withTargetDirection(rotateByAlliance(shotVector.getAngle()))

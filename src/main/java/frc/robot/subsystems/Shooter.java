@@ -125,8 +125,8 @@ public class Shooter extends SubsystemBase {
 	}
 	
 	public Translation2d getShotVector(Translation2d goalPos) {
-		return getShotVector_mine(goalPos);
-		// return getShotVector_int(goalPos);
+		// return getShotVector_mine(goalPos);
+		return getShotVector_eeshwark(goalPos);
 	}
 
 	// benched because regression was better
