@@ -34,6 +34,7 @@ public class Robot extends TimedRobot {
 		field.setRobotPose(drivetrain.getState().Pose);
 
 		SmartDashboard.putNumber("dist to goal", RobotContainer.getShotNorm().in(Meters));
+		SmartDashboard.putNumber("angle to goal", RobotContainer.shotVector.getAngle().getDegrees());
 	}
 	
 	@Override

@@ -118,15 +118,15 @@ public class Shooter extends SubsystemBase {
 	Translation2d getShotVector_mine(Translation2d goalPos) {
         Translation2d robot = RobotContainer.getRobotPose().getTranslation();
 		var speeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
-		Translation2d robotVel = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond); 
-		Translation2d target = goalPos.minus(robot).minus(robotVel);
+		Translation2d robotVel = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+		Translation2d target = goalPos.minus(robot).minus(robotVel).times(cos(ShooterConstants.shooterAngle.in(Radians)));
 
 		return target;
 	}
 	
 	public Translation2d getShotVector(Translation2d goalPos) {
-		// return getShotVector_mine(goalPos);
-		return getShotVector_eeshwark(goalPos);
+		return getShotVector_mine(goalPos);
+		// return getShotVector_eeshwark(goalPos);
 	}
 
 	// benched because regression was better

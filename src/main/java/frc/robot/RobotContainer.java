@@ -6,7 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -196,13 +195,13 @@ public class RobotContainer {
 		return Meters.of(shotVector.getNorm());
 	}
 
-    // Rotation2d getDirectionToHub() {
-	// 	return rotateByAlliance(shooter.getShotVector().getAngle());
-	// }
+    Rotation2d getDirectionToHub() {
+		return rotateByAlliance(shooter.getShotVector(FieldConstants.getHubPos()).getAngle());
+	}
 
-    // public Distance getDistanceToHub() {
-    //     return Meters.of(shooter.getShotVector().getNorm());
-    // }
+    public Distance getDistanceToHub() {
+        return Meters.of(shooter.getShotVector(FieldConstants.getHubPos()).getNorm());
+    }
 
     void updateSlow(boolean slow) {
         slowMult = slow ? SwerveConstants.slowMult : 1;
@@ -250,12 +249,12 @@ public class RobotContainer {
 		alignButton.and(inAllianceZone).and(trenchAlignMacro.negate())
 		.whileTrue(
 			new ParallelCommandGroup(
-				new SpinUp(getShotNorm()),
+				new SpinUp(getDistanceToHub()),
 				// uncomment if using eeshwark shot vector
 				// new SpinUp(RPM.of(shotVector.getNorm())),
 				drivetrain.applyRequest(()->face
 					// might have to remove rotation
-					.withTargetDirection(rotateByAlliance(shotVector.getAngle()))
+					.withTargetDirection(rotateByAlliance(getDirectionToHub()))
 					.withMaxAbsRotationalRate(MaxAngularRate / 1.5)
 					.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
 					.withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
@@ -272,9 +271,9 @@ public class RobotContainer {
 		alignButton.and(inNeutralZone).and(trenchAlignMacro.negate())
 		.whileTrue(
 			new ParallelCommandGroup(
-				// new SpinUp(getShotNorm()),
+				new SpinUp(getShotNorm()),
 				// uncomment if using eeshwark shot vector
-				new SpinUp(RPM.of(shotVector.getNorm())),
+				// new SpinUp(RPM.of(shotVector.getNorm())),
 				drivetrain.applyRequest(()->face
 					// TODO if doesnt work for both alliances remove rotation
 					.withTargetDirection(rotateByAlliance(shotVector.getAngle()))
