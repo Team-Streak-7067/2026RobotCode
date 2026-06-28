@@ -187,16 +187,17 @@ public class RobotContainer {
 		return drivetrain.getState().Pose;
 	}
 
-	Rotation2d rotateByAlliance(Rotation2d rot) {
-		return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? rot.rotateBy(Rotation2d.k180deg) : rot;
-	}
+	// Rotation2d rotateByAlliance(Rotation2d rot) {
+	// 	return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? rot.rotateBy(Rotation2d.k180deg) : rot;
+	// }
 
 	public static Distance getShotNorm() {
 		return Meters.of(shotVector.getNorm());
 	}
 
     Rotation2d getDirectionToHub() {
-		return rotateByAlliance(shooter.getShotVector(FieldConstants.getHubPos()).getAngle());
+		// return rotateByAlliance(shooter.getShotVector(FieldConstants.getHubPos()).getAngle());
+		return shooter.getShotVector(FieldConstants.getHubPos()).getAngle();
 	}
 
     public Distance getDistanceToHub() {
@@ -254,7 +255,8 @@ public class RobotContainer {
 				// new SpinUp(RPM.of(shotVector.getNorm())),
 				drivetrain.applyRequest(()->face
 					// might have to remove rotation
-					.withTargetDirection(rotateByAlliance(getDirectionToHub()))
+					// .withTargetDirection(rotateByAlliance(getDirectionToHub()))
+					.withTargetDirection(getDirectionToHub())
 					.withMaxAbsRotationalRate(MaxAngularRate / 1.5)
 					.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
 					.withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
@@ -276,7 +278,8 @@ public class RobotContainer {
 				// new SpinUp(RPM.of(shotVector.getNorm())),
 				drivetrain.applyRequest(()->face
 					// TODO if doesnt work for both alliances remove rotation
-					.withTargetDirection(rotateByAlliance(shotVector.getAngle()))
+					// .withTargetDirection(rotateByAlliance(shotVector.getAngle()))
+					.withTargetDirection(shotVector.getAngle())
 					.withMaxAbsRotationalRate(MaxAngularRate / 1.5)
 					.withVelocityX(-driver.getLeftY() * MaxSpeed * slowMult)
 					.withVelocityY(-driver.getLeftX() * MaxSpeed * slowMult)
