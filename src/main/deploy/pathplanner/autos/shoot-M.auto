@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "shoot-1"
+                  "pathName": "shoot-M"
                 }
               },
               {
@@ -33,6 +33,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "test",
+  "folder": "shoot",
   "choreoAuto": false
 }
