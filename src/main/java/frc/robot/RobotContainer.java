@@ -191,13 +191,16 @@ public class RobotContainer {
 		return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? rot.rotateBy(Rotation2d.k180deg) : rot;
 	}
 
+	Translation2d rotateByAlliance(Translation2d t2d) {
+		return t2d.rotateBy(rotateByAlliance(Rotation2d.kZero));
+	}
+
 	public static Distance getShotNorm() {
 		return Meters.of(shotVector.getNorm());
 	}
 
     Rotation2d getDirectionToHub() {
 		return rotateByAlliance(shooter.getShotVector(FieldConstants.getHubPos()).getAngle());
-		// return shooter.getShotVector(FieldConstants.getHubPos()).getAngle();
 	}
 
     public Distance getDistanceToHub() {
@@ -226,7 +229,7 @@ public class RobotContainer {
 			double distU = FieldConstants.getUpperDeliveryPoint().getDistance(getRobotPose().getTranslation());
 
 			Translation2d goalPos = distL <= distU ? FieldConstants.getLowerDeliveryPoint() : FieldConstants.getUpperDeliveryPoint();
-			shotVector = shooter.getShotVector(goalPos);
+			shotVector = rotateByAlliance(shooter.getShotVector(goalPos));
 		}));
 
 		SmartDashboard.putBoolean("trenchActivator", trenchActivator.getAsBoolean());
