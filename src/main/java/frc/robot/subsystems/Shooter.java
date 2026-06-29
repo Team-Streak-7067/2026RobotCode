@@ -4,12 +4,14 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static java.lang.Math.cos;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -58,6 +60,9 @@ public class Shooter extends SubsystemBase {
 		TalonFXConfiguration cfg = new TalonFXConfiguration();
 		cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+		cfg.CurrentLimits = new CurrentLimitsConfigs()
+			.withSupplyCurrentLimit(Amps.of(70))
+			.withSupplyCurrentLimitEnable(true);
 		cfg.Slot0 = ShooterConstants.S0C;
 		cfg.Feedback.SensorToMechanismRatio = 1/ShooterConstants.ratio;
 		leader.getConfigurator().apply(cfg);
