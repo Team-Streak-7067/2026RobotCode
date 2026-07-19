@@ -16,6 +16,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.units.measure.Angle;
@@ -62,13 +63,13 @@ public class Intake extends SubsystemBase {
 	}
 
 	void configMotors() {
-		SparkFlexConfig intakeConfig = new SparkFlexConfig();
+		SparkBaseConfig intakeConfig = new SparkFlexConfig()
+			.smartCurrentLimit(60);
 		intakeConfig.idleMode(IdleMode.kBrake);
 		intakeConfig.inverted(false);
 		intakeMotor.configure(intakeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
 		TalonFXConfiguration angleConfig = new TalonFXConfiguration();
-        //probably dont need reverse soft limit because we reset pos by limit switch every time we close intake
 		angleConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 		angleConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = IntakeConstants.angleForwardSoftLimit.in(Rotations);
 		angleConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;

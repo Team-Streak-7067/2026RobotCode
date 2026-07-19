@@ -6,13 +6,14 @@ package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.commands.compound.Shoot;
 import frc.robot.commands.compound.StopShooting;
 
 public class ShootAuto extends SequentialCommandGroup {
 	public ShootAuto() {
 		addCommands(
-			new Shoot(),
+			new Shoot(RobotContainer.getShotNorm()),
 			new WaitCommand(5),
 			new StopShooting()
 		);

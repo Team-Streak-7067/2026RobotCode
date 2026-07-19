@@ -1,0 +1,14 @@
+!	low priority
+!!! high priority
+	* in progress
+
+### TODO
+!!	*assisted trench crossing by aligned to april tag
+!	mirror autos (or redo them)
+
+## FIXES
+
+### TO TEST
+	shooting on the fly
+	shooting and delivery both alliances
+	delivery (both alliances)

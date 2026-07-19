@@ -4,14 +4,15 @@
 
 package frc.robot.commands.compound;
 
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.conveyor.RunConveyor;
 import frc.robot.commands.shooter.SpinUp;
 
 public class Shoot extends ParallelCommandGroup {
-	public Shoot() {
+	public Shoot(Distance dist) {
 		addCommands(
-			new SpinUp(),			
+			new SpinUp(dist),
 			new RunConveyor()
 		);
 	}

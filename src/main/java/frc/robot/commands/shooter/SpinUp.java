@@ -6,32 +6,41 @@ package frc.robot.commands.shooter;
 
 import static edu.wpi.first.units.Units.Meters;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.Robot;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shooter.ShooterState;
 
 public class SpinUp extends InstantCommand {
 	Shooter shooter = Shooter.getInstance();
 	Distance dist; 
+	AngularVelocity rate;
+	Translation2d goalPos;
 	
-	public SpinUp() {
-		addRequirements(shooter);
+	public SpinUp(Translation2d goalPos) {
+		this.goalPos = goalPos;
+	}
+
+	public SpinUp(AngularVelocity rate) {
+		this.rate = rate;
 	}
 
 	public SpinUp(Distance dist) {
 		this.dist = dist;
 	}
-
-	public SpinUp(double dist) {
-		this.dist = Meters.of(dist);
-	}
 	
 	@Override
 	public void initialize() {
-		dist = Robot.m_robotContainer.getDistanceToHub();
-		shooter.spinUp(dist);
+		if (rate != null) {
+			shooter.updateSetpoint(rate);
+		} else {
+			if (dist == null) {
+				dist = Meters.of(shooter.getShotVector(goalPos).getNorm());
+			}
+			shooter.spinUp(dist);
+		}
 		shooter.setState(ShooterState.Shooting);
 	}
 }
