@@ -95,7 +95,7 @@ public final class Constants {
 		public static final double rotateKi = 0;
 		public static final double rotateKd = 1;
 
-		public static final double slowMult = 0.3;
+		public static final double slowMult = 0.2;
 	}
 
 	public class AutoConstants {
