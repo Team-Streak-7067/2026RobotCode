@@ -222,7 +222,8 @@ public class RobotContainer {
 
 		// DRIVER
 		alignButton.onFalse(new SetLedState(LedStatus.Off).andThen(new StopShooter()));
-		confirmButton.onTrue(new Shoot(getShotNorm())).onFalse(new StopShooting());
+		// confirmButton.onTrue(new Shoot(getShotNorm())).onFalse(new StopShooting());
+		confirmButton.onTrue(new Shoot(Meters.of(.5))).onFalse(new StopShooting());
 		inAllianceZone.whileTrue(Commands.runOnce(()->{shotVector = shooter.getShotVector(FieldConstants.getHubPos());}));
 		inNeutralZone.whileTrue(Commands.runOnce(()->{
 			double distL = FieldConstants.getLowerDeliveryPoint().getDistance(getRobotPose().getTranslation());
